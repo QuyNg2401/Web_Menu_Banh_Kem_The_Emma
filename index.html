@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Bánh Kem - Sang Trọng</title>
+    <style>
+        :root{
+            --primary-color: #E5BC6F;
+            --secondary-color: #000000;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f3e5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: #000000;
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #222;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .cake-item {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid #E5BC6F;
+        }
+        
+        .cake-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cake-image {
+            height: 250px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cake-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cake-info {
+            padding: 20px;
+        }
+        
+        .cake-name {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #000;
+            border-bottom: 2px solid #E5BC6F;
+            padding-bottom: 10px;
+        }
+        
+        .cake-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .cake-price {
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: #000;
+            margin-bottom: 15px;
+        }
+        
+        .cake-link {
+            display: inline-block;
+            background-color: #E5BC6F;
+            color: #000;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            width: 100%;
+            border: 1px solid #000;
+        }
+        
+        .cake-link:hover {
+            background-color: #000;
+            color: #E5BC6F;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            background-color: #000;
+            color: #E5BC6F;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 2rem;
+            position: relative;
+            color: #000;
+        }
+        
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 100px;
+            height: 3px;
+            background-color: #E5BC6F;
+            margin: 10px auto;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #000;
+            display: inline-block;
+            padding: 10px 20px;
+            border: 3px solid #000;
+            background-color: #E5BC6F;
+            margin-bottom: 10px;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media only screen and (max-width: 1200px) {
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+        }
+        
+        @media only screen and (max-width: 992px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .cake-image {
+                height: 220px;
+            }
+        }
+        
+        @media only screen and (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 15px;
+            }
+            
+            .cake-name {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media only screen and (max-width: 576px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+                padding: 8px 15px;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+                margin: 20px 0;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .cake-image {
+                height: 200px;
+            }
+            
+            header {
+                padding: 20px 10px;
+                margin-bottom: 20px;
+            }
+            
+            .cake-info {
+                padding: 15px;
+            }
+            
+            .cake-name {
+                font-size: 1.2rem;
+            }
+            
+            .cake-description {
+                font-size: 0.9rem;
+            }
+            
+            footer {
+                margin-top: 40px;
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media only screen and (max-width: 360px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+                padding: 5px 10px;
+            }
+            
+            .cake-image {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">The Emma</div>
+        <h1>Menu Bánh Kem</h1>
+        <p class="subtitle">Ngọt ngào, tinh tế và độc đáo</p>
+    </header>
+    
+    <div class="container">
+        <h2 class="section-title">Bánh Kem Sinh Nhật</h2>
+        <div class="menu-grid">
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Chocolate">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Kem Chocolate</h3>
+                    <p class="cake-description">Bánh kem sô-cô-la đậm đà với lớp kem tươi mịn màng và trang trí hạt sô-cô-la cao cấp.</p>
+                    <p class="cake-price">350.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+            
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Vani">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Kem Vani</h3>
+                    <p class="cake-description">Bánh kem vani nhẹ nhàng với lớp phủ kem tươi và trang trí trái cây tươi theo mùa.</p>
+                    <p class="cake-price">320.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+            
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Red Velvet">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Red Velvet</h3>
+                    <p class="cake-description">Bánh kem đỏ quyến rũ với lớp kem cheese tươi và trang trí chocolate trắng tinh tế.</p>
+                    <p class="cake-price">380.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Bánh Kem Đặc Biệt</h2>
+        <div class="menu-grid">
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Tiramisu">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Tiramisu</h3>
+                    <p class="cake-description">Bánh kem tiramisu với vị cà phê đậm đà, phô mai mascarpone và bột cacao hảo hạng.</p>
+                    <p class="cake-price">420.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+            
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Matcha">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Kem Matcha</h3>
+                    <p class="cake-description">Bánh kem matcha với hương vị trà xanh Nhật Bản, lớp kem tươi mềm mịn và đậu đỏ.</p>
+                    <p class="cake-price">400.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+            
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Mousse">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Mousse Chanh Dây</h3>
+                    <p class="cake-description">Bánh mousse chanh dây với vị chua ngọt hài hòa, lớp thạch mềm mịn và trang trí trái cây tươi.</p>
+                    <p class="cake-price">450.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Bánh Kem Theo Chủ Đề</h2>
+        <div class="menu-grid">
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Công Chúa">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Kem Công Chúa</h3>
+                    <p class="cake-description">Bánh kem công chúa với trang trí màu hồng pastel, vương miện và các chi tiết tinh tế dành cho bé gái.</p>
+                    <p class="cake-price">500.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+            
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Siêu Anh Hùng">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Kem Siêu Anh Hùng</h3>
+                    <p class="cake-description">Bánh kem siêu anh hùng với các nhân vật nổi tiếng và màu sắc rực rỡ dành cho bé trai.</p>
+                    <p class="cake-price">500.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+            
+            <div class="cake-item">
+                <div class="cake-image">
+                    <img src="/api/placeholder/400/250" alt="Bánh Kem Cưới">
+                </div>
+                <div class="cake-info">
+                    <h3 class="cake-name">Bánh Kem Cưới</h3>
+                    <p class="cake-description">Bánh kem cưới sang trọng với nhiều tầng, điểm trang trí hoa tươi và chi tiết tinh tế.</p>
+                    <p class="cake-price">Từ 1.200.000 VNĐ</p>
+                    <a href="#" class="cake-link">Đặt Ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Sweet Delights - Chuyên các loại bánh kem cao cấp</p>
+        <p>Địa chỉ: 123 Đường Nguyễn Huệ, Quận 1, TP.HCM</p>
+        <p>Liên hệ: 0123.456.789 - sweetdelights@gmail.com</p>
+    </footer>
+</body>
+</html>
