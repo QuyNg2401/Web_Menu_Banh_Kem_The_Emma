@@ -5,22 +5,22 @@ cake-shop/
 │   │   ├── admin.css           # CSS cho giao diện admin/nhân viên
 │   │   ├── responsive.css      # CSS cho giao diện responsive
 │   ├── js/
-│   │   ├── main.js             # JS cho khách hàng (giỏ hàng, sản phẩm)
+│   │   ├── main.js             # JS cho khách hàng (giỏ hàng, menu)
 │   │   ├── admin.js            # JS cho admin/nhân viên (quản lý)
 │   │   └── utils.js            # Hàm tiện ích (AJAX, validate form)
 │   ├── images/
 │   │   ├── products/           # Hình ảnh sản phẩm
 │   │   ├── logo.png            # Logo website
-│   │   └── banners/            # Hình ảnh banner
+│   │   ├── banners/            # Hình ảnh banner
 │
 ├── includes/                   # File dùng chung
 │   ├── config.php              # Cấu hình kết nối database
 │   ├── db.php                  # Hàm truy vấn chung
-│   ├── functions.php           # Hàm tiện ích (upload file, format giá)
 │   ├── auth.php                # Kiểm tra đăng nhập/phân quyền
+│   ├── functions.php           # Hàm tiện ích (upload file, format giá)
 │
 ├── models/                     # Model (xử lý dữ liệu)
-│   ├── UserModel.php           # Quản lý tài khoản (admin, nhân viên, học viên)
+│   ├── UserModel.php           # Quản lý tài khoản (admin, nhân viên)
 │   ├── ProductModel.php        # Quản lý sản phẩm
 │   ├── InventoryModel.php      # Quản lý kho
 │   ├── OrderModel.php          # Quản lý hóa đơn/đơn hàng
@@ -38,18 +38,17 @@ cake-shop/
 │
 ├── views/                      # View (giao diện)
 │   ├── layouts/
-│   │   ├── header.php          # Header chung
-│   │   ├── footer.php          # Footer chung
+│   │   ├── header.php          # Header cho khách hàng
+│   │   ├── footer.php          # Footer cho khách hàng
 │   │   ├── admin_header.php    # Header cho admin/nhân viên
-│   ├── client/                 # Giao diện khách hàng
-│   │   ├── index.php           # Trang chủ
-│   │   ├── shop.php            # Trang bán hàng (hiển thị sản phẩm)
-│   │   ├── product-detail.php  # Chi tiết sản phẩm
+│   │   ├── admin_footer.php    # Footer cho admin/nhân viên
+│   ├── client/
+│   │   ├── shop.php            # Trang hiển thị menu bánh kem
 │   │   ├── cart.php            # Giỏ hàng
 │   │   ├── checkout.php        # Thanh toán
 │   │   ├── login.php           # Đăng nhập khách hàng
-│   ├── admin/                  # Giao diện admin/nhân viên
-│   │   ├── index.php           # Dashboard
+│   ├── admin/
+│   │   ├── index.php           # Dashboard admin/nhân viên
 │   │   ├── login.php           # Đăng nhập admin/nhân viên
 │   │   ├── employees.php       # Quản lý nhân viên
 │   │   ├── accounts.php        # Quản lý tài khoản
