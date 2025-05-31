@@ -345,9 +345,14 @@ footer {
 }
 
 @media (max-width: 1024px) {
+  .product-swiper .swiper-slide,
+  .favorite-swiper .swiper-slide {
+    width: 50vw !important;
+    max-width: 100vw;
+    min-width: 0;
+  }
   .cake-item {
-    max-width: 220px;
-    min-height: 380px;
+    max-width: 95%;
   }
 }
 @media (max-width: 768px) {
