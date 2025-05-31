@@ -240,7 +240,7 @@
         display: flex;
         flex-direction: column;
         position: absolute;
-        top: 56px;
+        top: 100px;
         left: 0;
         right: 0;
         background: #000;
@@ -256,6 +256,10 @@
     }
     .nav-content {
         justify-content: space-between;
+    }
+    .nav-links a:hover::after,
+    .nav-links a.active::after {
+        display: none !important;
     }
 }
 

@@ -13,6 +13,38 @@ body {
     background-color: #f9f3e5;
     color: #333;
     line-height: 1.6;
+    position: relative;
+    z-index: 10;
+}
+.img1, .img2, .img3, .img4,.img5,.img6 {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    z-index: 0;
+    pointer-events: none;
+}
+.img1 { bottom: 320px; right: 30px; }
+.img2 { top: 900px; right: 50px; }
+.img3 { top: 900px; left: 50px; width: 200px; height: 200px;}
+.img4 { bottom: 340px; left: 50px;  width: 100px; height: 100px;}
+.img5 { bottom: 900px; left: 50px;  width: 100px; height: 100px;}
+.img6 { bottom: 900px; right: 50px;  width: 100px; height: 100px;}
+.img1-bottom-right {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 120px;
+    height: auto;
+    z-index: 10;
+}
+.img-fixed-bottom-right {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: 120px;
+    height: auto;
+    z-index: 1000;
+    pointer-events: none;
 }
 
 .container {
@@ -51,20 +83,23 @@ h1 {
 }
 
 .cake-item {
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 2px solid #E5BC6F;
-}
-
-.cake-item:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 480px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 270px;
+    margin: 0 auto;
 }
 
 .cake-image {
+    flex: 0 0 250px;
     height: 250px;
     width: 100%;
     overflow: hidden;
@@ -82,6 +117,10 @@ h1 {
 }
 
 .cake-info {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     padding: 20px;
 }
 
@@ -91,6 +130,9 @@ h1 {
     color: #000;
     border-bottom: 2px solid #E5BC6F;
     padding-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .cake-description {
@@ -257,4 +299,77 @@ footer {
     0% { box-shadow: 0 0 0 0 rgba(24,119,243,0.15), 0 0 0 8px rgba(76,175,80,0.12);}
     70% { box-shadow: 0 0 0 12px rgba(24,119,243,0.05), 0 0 0 20px rgba(76,175,80,0.04);}
     100% { box-shadow: 0 0 0 0 rgba(24,119,243,0.15), 0 0 0 8px rgba(76,175,80,0.12);}
+}
+@media (max-width: 1288px) {
+    .img1, .img2, .img3, .img4,.img5,.img6 {
+        width: 80px;
+        height: 80px;
+    }
+    .img1 { bottom: 320px; right: 100px; }
+    .img2 { top: 770px; right: 50px; }
+    .img3 { top: 770px; left: 0px;width: 150px; height: 150px;}
+    .img4 { bottom: 320px; left: 50px; }
+    .img5 { bottom: 900px; left: 50px; }
+    .img6 { bottom: 900px; right: 50px;}
+}
+
+@media (max-width: 1285px) {
+    .img1, .img2, .img3, .img4,.img5,.img6 {
+        display: none;
+    }
+}
+
+/* Xóa hoặc ghi đè CSS cũ slider */
+.product-slider, .favorite-slider, .slider-track {
+  all: unset;
+}
+
+/* CSS chuẩn cho Swiper */
+.product-swiper, .favorite-swiper {
+  width: 100%;
+  padding-bottom: 30px;
+}
+.product-swiper .swiper-slide,
+.favorite-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  height: auto;
+}
+.swiper-wrapper {
+  display: flex;
+}
+.swiper-slide {
+  flex-shrink: 0;
+  width: auto;
+}
+
+@media (max-width: 1024px) {
+  .cake-item {
+    max-width: 220px;
+    min-height: 380px;
+  }
+}
+@media (max-width: 768px) {
+  .cake-item {
+    max-width: 90vw;
+    min-height: 320px;
+  }
+  .cake-image {
+    height: 180px;
+    flex-basis: 180px;
+  }
+}
+
+.swiper-button-next, .swiper-button-prev {
+  color: var(--primary-color) !important;
+  fill: var(--primary-color) !important;
+}
+.swiper-pagination-bullet {
+  background: var(--primary-color) !important;
+  opacity: 0.5;
+}
+.swiper-pagination-bullet-active {
+  background: var(--primary-color) !important;
+  opacity: 1;
 }
