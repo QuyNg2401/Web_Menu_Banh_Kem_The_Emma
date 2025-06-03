@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới thiệu - The Emma</title>
+    <link rel="stylesheet" href="Assets/css/style.css">
+    <link rel="stylesheet" href="Assets/css/reponsive.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="icon" type="image/png" href="Assets/images/icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Assets/images/apple-touch-icon.png">
+    <link rel="manifest" href="Assets/site.webmanifest">
+    <meta name="theme-color" content="#E5BC6F">
+</head>
+<body>
+    <nav class="nav-container">
+        <div class="nav-content">
+            <div class="logo">
+                <img src="Assets/images/logo.png" alt="The Emma Logo">
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Trang chủ</a>
+                <a href="menu.html">Menu bánh</a>
+                <a href="about.html" class="active">Giới thiệu</a>
+                <a href="contact.html">Liên hệ</a>
+            </div>
+            <button class="mobile-menu-button">☰</button>
+        </div>
+    </nav>
+    <div class="container">
+        <h2 class="section-title" style="color:var(--primary-color);">Giới thiệu về The Emma</h2>
+        <div class="about-content">
+            <p><strong>The Emma</strong> là tiệm bánh kem cao cấp với sứ mệnh mang đến những chiếc bánh tươi ngon, đẹp mắt và an toàn cho sức khỏe khách hàng. Chúng tôi tự hào với đội ngũ thợ bánh chuyên nghiệp, sáng tạo và tận tâm.</p>
+            <p>Với nguyên liệu được chọn lọc kỹ càng, quy trình sản xuất hiện đại, The Emma cam kết mang đến trải nghiệm vị giác tuyệt vời cho mọi khách hàng. Chúng tôi không ngừng đổi mới, cập nhật xu hướng bánh hiện đại để phục vụ mọi nhu cầu từ sinh nhật, cưới hỏi, sự kiện đến các dịp đặc biệt.</p>
+            <ul>
+                <li><strong>Sứ mệnh:</strong> Mang đến những chiếc bánh chất lượng, an toàn và sáng tạo.</li>
+                <li><strong>Giá trị cốt lõi:</strong> Chất lượng - Sáng tạo - Tận tâm - Khách hàng là trung tâm.</li>
+                <li><strong>Đội ngũ:</strong> Thợ bánh giàu kinh nghiệm, nhân viên phục vụ chuyên nghiệp.</li>
+            </ul>
+            <img src="Assets/images/about_team.jpg" alt="Đội ngũ The Emma" style="max-width:400px;display:block;margin:30px auto;">
+        </div>
+    </div>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <p>Hộ kinh doanh tiệm bánh The Emma</p>
+                <p>105A/20 Đường Hồ Thị Kỷ, Phường 1, quận 10, Thành phố Hồ Chí Minh</p>
+                <p>Số điện thoại: 028.8888.3388</p>
+                <p>Email: theemma1905@gmail.com</p>
+                <p>Giấy chứng nhận đăng ký kinh doanh: 888</p>
+                <p>Mã số doanh nghiệp: 888. Giấy chứng nhận đăng ký doanh nghiệp do Sở Kế hoạch và Đầu tư</p>
+                <p>Thành phố Hồ Chí Minh cấp lần đầu ngày 16/04/0000.</p>
+            </div>
+            <div class="footer-cert">
+                <img src="Assets/images/bocongthuong.png" alt="Đã thông báo Bộ Công Thương" style="max-width:180px;">
+            </div>
+        </div>
+    </footer>
+    <div class="floating-buttons">
+        <a href="https://facebook.com/theemma" class="fb-btn" target="_blank" aria-label="Facebook">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="20" fill="#1877f3"/>
+                <path d="M25.5 20.5h-3v8h-4v-8h-2v-3h2v-2c0-2.21 1.34-3 3-3h4v3h-2c-.55 0-1 .45-1 1v1h3l-1 3z" fill="#fff"/>
+            </svg>
+        </a>
+        <a href="https://zalo.me/0926809269" class="zalo-btn" target="_blank" aria-label="Zalo">
+            <img src="Assets/images/zalo_icon.svg" alt="Zalo">
+        </a>
+        <a href="tel:0926809269" class="phone-btn" aria-label="Gọi 0926809269">
+            <span class="phone-icon">📞</span>
+            <span class="phone-text">0926.809.269</span>
+        </a>
+        <button id="backToTopButton" class="back-to-top-btn" aria-label="Lên đầu trang">↑</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="Assets/js/main.js"></script>
+    <script>
+        // Xử lý nút Back to Top mới
+        const backToTopButton = document.getElementById('backToTopButton');
+        if (backToTopButton) {
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.style.display = 'flex';
+                    backToTopButton.classList.add('back-to-top-animated');
+                } else {
+                    backToTopButton.style.display = 'none';
+                    backToTopButton.classList.remove('back-to-top-animated');
+                }
+            });
+            backToTopButton.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            // Ẩn mặc định
+            backToTopButton.style.display = 'none';
+        }
+    </script>
+</body>
+</html> 
