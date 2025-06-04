@@ -130,6 +130,15 @@
             // Ẩn mặc định
             backToTopButton.style.display = 'none';
         }
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const navLinks = document.querySelector('.nav-links');
+        if(mobileMenuButton && navLinks) {
+            mobileMenuButton.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
     </script>
 </body>
 </html> 

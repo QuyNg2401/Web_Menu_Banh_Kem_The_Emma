@@ -358,7 +358,7 @@ footer {
 @media (max-width: 768px) {
   .cake-item {
     max-width: 90vw;
-    min-height: 320px;
+    min-height: unset !important;
   }
   .cake-image {
     height: 180px;
