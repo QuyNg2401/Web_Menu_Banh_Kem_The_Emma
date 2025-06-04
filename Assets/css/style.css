@@ -23,12 +23,12 @@ body {
     z-index: 0;
     pointer-events: none;
 }
-.img1 { bottom: 320px; right: 30px; }
+.img1 { bottom: 200px; right: 30px; }
 .img2 { top: 900px; right: 50px; }
 .img3 { top: 900px; left: 50px; width: 200px; height: 200px;}
-.img4 { bottom: 340px; left: 50px;  width: 100px; height: 100px;}
-.img5 { bottom: 900px; left: 50px;  width: 100px; height: 100px;}
-.img6 { bottom: 900px; right: 50px;  width: 100px; height: 100px;}
+.img4 { bottom: 220px; left: 50px;  width: 100px; height: 100px;}
+.img5 { bottom: 800px; left: 50px;  width: 100px; height: 100px;}
+.img6 { bottom: 800px; right: 50px;  width: 100px; height: 100px;}
 .img1-bottom-right {
     position: absolute;
     right: 0;
@@ -302,19 +302,6 @@ footer {
 }
 @media (max-width: 1288px) {
     .img1, .img2, .img3, .img4,.img5,.img6 {
-        width: 80px;
-        height: 80px;
-    }
-    .img1 { bottom: 320px; right: 100px; }
-    .img2 { top: 770px; right: 50px; }
-    .img3 { top: 770px; left: 0px;width: 150px; height: 150px;}
-    .img4 { bottom: 320px; left: 50px; }
-    .img5 { bottom: 900px; left: 50px; }
-    .img6 { bottom: 900px; right: 50px;}
-}
-
-@media (max-width: 1285px) {
-    .img1, .img2, .img3, .img4,.img5,.img6 {
         display: none;
     }
 }
@@ -344,26 +331,21 @@ footer {
   width: auto;
 }
 
+/* Responsive width cho .cake-item */
+@media (max-width: 1200px) {
+  .cake-item { max-width: 270px; width: 100%; }
+}
 @media (max-width: 1024px) {
-  .product-swiper .swiper-slide,
-  .favorite-swiper .swiper-slide {
-    width: 50vw !important;
-    max-width: 100vw;
-    min-width: 0;
-  }
-  .cake-item {
-    max-width: 95%;
-  }
+  .cake-item { max-width: 240px; width: 100%; }
+}
+@media (max-width: 900px) {
+  .cake-item { max-width: 220px; width: 100%; }
 }
 @media (max-width: 768px) {
-  .cake-item {
-    max-width: 90vw;
-    min-height: unset !important;
-  }
-  .cake-image {
-    height: 180px;
-    flex-basis: 180px;
-  }
+  .cake-item { max-width: 65vw; width: 65vw; }
+}
+@media (max-width: 600px) {
+  .cake-item { max-width: 75vw; width: 75vw; }
 }
 
 .swiper-button-next, .swiper-button-prev {
