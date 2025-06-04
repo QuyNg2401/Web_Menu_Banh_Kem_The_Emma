@@ -7,15 +7,6 @@
     .footer-cert {
         margin-top: 20px;
     }
-    .product-swiper .swiper-slide,
-    .favorite-swiper .swiper-slide {
-        width: 47vw !important;
-        max-width: 47vw;
-    }
-    .cake-item {
-        max-width: 220px;
-        width: 100%;
-    }
 }
 
 .section-title {
@@ -60,7 +51,6 @@
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 5px;
     }
-    .cake-item { max-width: 270px; width: 100%; }
 }
 
 @media only screen and (max-width: 992px) {
@@ -98,7 +88,6 @@
     .cake-name {
         font-size: 1.3rem;
     }
-    .cake-item { max-width: 65vw; width: 65vw; }
 }
 
 @media only screen and (max-width: 576px) {
@@ -106,7 +95,6 @@
         font-size: 2rem;
     }
     
-   
     .subtitle {
         font-size: 1rem;
     }
@@ -334,26 +322,7 @@
     background: #FFC107;
     color: #fff;
 }
-@media (max-width: 1024px) {
-  .cake-item { max-width: 240px; width: 100%; }
-}
-@media (max-width: 600px) {
-  .product-swiper .swiper-slide,
-  .favorite-swiper .swiper-slide {
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-  }
-  .swiper-wrapper {
-    align-items: center !important;
-  }
-  .cake-item {
-    max-width: 50vw;
-    width: 50vw;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -381,36 +350,78 @@
     object-fit: cover;
 }
 
-@media (max-width: 1024px) {
+/* CSS cơ bản cho Swiper */
+.product-swiper, .favorite-swiper {
+  width: 100%;
+  padding-bottom: 30px;
+}
+
+.product-swiper .swiper-slide,
+.favorite-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  height: auto;
+}
+
+.swiper-wrapper {
+  display: flex;
+  align-items: stretch;
+}
+
+.swiper-slide {
+  flex-shrink: 0;
+  width: auto;
+}
+
+/* Responsive cho cake-item và swiper-slide đồng bộ */
+@media (min-width: 1200px) {
   .product-swiper .swiper-slide,
   .favorite-swiper .swiper-slide {
-    width: 44vw !important;
-    max-width: 46vw;
+    width: calc(25% - 15px) !important;
+    max-width: calc(25% - 15px);
   }
-  .cake-item {
-    max-width: 92%;
-    width: 100%;
+  .cake-item { 
+    max-width: 270px; 
+    width: 100%; 
   }
 }
-@media (max-width: 900px) {
+
+@media (max-width: 1199px) and (min-width: 900px) {
   .product-swiper .swiper-slide,
   .favorite-swiper .swiper-slide {
-    width: 50vw !important;
-    max-width: 50vw;
+    width: calc(33.333% - 15px) !important;
+    max-width: calc(33.333% - 15px);
   }
-  .cake-item {
-    max-width: 98%;
-    width: 100%;
+  .cake-item { 
+    max-width: 240px; 
+    width: 100%; 
   }
 }
-@media (max-width: 600px) {
+
+@media (max-width: 899px) and (min-width: 600px) {
   .product-swiper .swiper-slide,
   .favorite-swiper .swiper-slide {
-    width: 100vw !important;
-    max-width: 100vw;
+    width: calc(50% - 10px) !important;
+    max-width: calc(50% - 10px);
   }
-  .cake-item {
-    max-width: 100vw;
-    width: 100vw;
+  .cake-item { 
+    max-width: 220px; 
+    width: 100%; 
+  }
+}
+
+@media (max-width: 599px) {
+  .product-swiper .swiper-slide,
+  .favorite-swiper .swiper-slide {
+    width: 100% !important;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .cake-item { 
+    max-width: 280px; 
+    width: 90vw; 
+    margin: 0 auto;
   }
 }

@@ -367,49 +367,131 @@
         }
 
         // Sản phẩm mới
-        const productSwiper = new Swiper('.product-swiper', {
-            loop: true,
-            slidesPerView: 1,
-            spaceBetween: 20,
-            navigation: {
-                nextEl: '.product-swiper .swiper-button-next',
-                prevEl: '.product-swiper .swiper-button-prev',
-            },
-            pagination: {
-                el: '.product-swiper .swiper-pagination',
-                clickable: true,
-            },
-            watchOverflow: true,
-            centeredSlides: false,
-            breakpoints: {
-                0: { slidesPerView: 1, spaceBetween: 10, centeredSlides: false },
-                601: { slidesPerView: 2, spaceBetween: 10, centeredSlides: false },
-                900: { slidesPerView: 3, spaceBetween: 10, centeredSlides: false },
-                1200: { slidesPerView: 4, spaceBetween: 20, centeredSlides: false }
-            }
-        });
+        // const productSwiper = new Swiper('.product-swiper', {
+        //     loop: true,
+        //     slidesPerView: 1,
+        //     spaceBetween: 20,
+        //     navigation: {
+        //         nextEl: '.product-swiper .swiper-button-next',
+        //         prevEl: '.product-swiper .swiper-button-prev',
+        //     },
+        //     pagination: {
+        //         el: '.product-swiper .swiper-pagination',
+        //         clickable: true,
+        //     },
+        //     watchOverflow: true,
+        //     centeredSlides: false,
+        //     breakpoints: {
+        //         0: { slidesPerView: 1, spaceBetween: 10, centeredSlides: false },
+        //         601: { slidesPerView: 2, spaceBetween: 10, centeredSlides: false },
+        //         900: { slidesPerView: 3, spaceBetween: 10, centeredSlides: false },
+        //         1200: { slidesPerView: 4, spaceBetween: 20, centeredSlides: false }
+        //     }
+        // });
         // Được khách hàng yêu thích
-        const favoriteSwiper = new Swiper('.favorite-swiper', {
-            loop: true,
-            slidesPerView: 1,
-            spaceBetween: 20,
-            navigation: {
-                nextEl: '.favorite-swiper .swiper-button-next',
-                prevEl: '.favorite-swiper .swiper-button-prev',
-            },
-            pagination: {
-                el: '.favorite-swiper .swiper-pagination',
-                clickable: true,
-            },
-            watchOverflow: true,
+        // const favoriteSwiper = new Swiper('.favorite-swiper', {
+        //     loop: true,
+        //     slidesPerView: 1,
+        //     spaceBetween: 20,
+        //     navigation: {
+        //         nextEl: '.favorite-swiper .swiper-button-next',
+        //         prevEl: '.favorite-swiper .swiper-button-prev',
+        //     },
+        //     pagination: {
+        //         el: '.favorite-swiper .swiper-pagination',
+        //         clickable: true,
+        //     },
+        //     watchOverflow: true,
+        //     centeredSlides: false,
+        //     breakpoints: {
+        //         0: { slidesPerView: 1, spaceBetween: 10, centeredSlides: true },
+        //         601: { slidesPerView: 2, spaceBetween: 10, centeredSlides: false },
+        //         900: { slidesPerView: 3, spaceBetween: 10, centeredSlides: false },
+        //         1200: { slidesPerView: 4, spaceBetween: 20, centeredSlides: false }
+        //     }
+        // });
+           const productSwiper = new Swiper('.product-swiper', {
+    loop: true,
+    slidesPerView: 'auto',
+    spaceBetween: 20,
+    navigation: {
+        nextEl: '.product-swiper .swiper-button-next',
+        prevEl: '.product-swiper .swiper-button-prev',
+    },
+    pagination: {
+        el: '.product-swiper .swiper-pagination',
+        clickable: true,
+    },
+    centeredSlides: false,
+    breakpoints: {
+        0: { 
+            slidesPerView: 1, 
+            spaceBetween: 10, 
+            centeredSlides: true,
+            loop: true 
+        },
+        600: { 
+            slidesPerView: 2, 
+            spaceBetween: 10, 
             centeredSlides: false,
-            breakpoints: {
-                0: { slidesPerView: 1, spaceBetween: 10, centeredSlides: true },
-                601: { slidesPerView: 2, spaceBetween: 10, centeredSlides: false },
-                900: { slidesPerView: 3, spaceBetween: 10, centeredSlides: false },
-                1200: { slidesPerView: 4, spaceBetween: 20, centeredSlides: false }
-            }
-        });
+            loop: true 
+        },
+        900: { 
+            slidesPerView: 3, 
+            spaceBetween: 15, 
+            centeredSlides: false,
+            loop: true 
+        },
+        1200: { 
+            slidesPerView: 4, 
+            spaceBetween: 20, 
+            centeredSlides: false,
+            loop: true 
+        }
+    }
+});
+
+const favoriteSwiper = new Swiper('.favorite-swiper', {
+    loop: true,
+    slidesPerView: 'auto',
+    spaceBetween: 20,
+    navigation: {
+        nextEl: '.favorite-swiper .swiper-button-next',
+        prevEl: '.favorite-swiper .swiper-button-prev',
+    },
+    pagination: {
+        el: '.favorite-swiper .swiper-pagination',
+        clickable: true,
+    },
+    centeredSlides: false,
+    breakpoints: {
+        0: { 
+            slidesPerView: 1, 
+            spaceBetween: 10, 
+            centeredSlides: true,
+            loop: true 
+        },
+        600: { 
+            slidesPerView: 2, 
+            spaceBetween: 10, 
+            centeredSlides: false,
+            loop: true 
+        },
+        900: { 
+            slidesPerView: 3, 
+            spaceBetween: 15, 
+            centeredSlides: false,
+            loop: true 
+        },
+        1200: { 
+            slidesPerView: 4, 
+            spaceBetween: 20, 
+            centeredSlides: false,
+            loop: true 
+        }
+    }
+});
     </script>
+  
 </body>
 </html>
