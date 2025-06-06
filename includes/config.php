@@ -1,0 +1,116 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Cấu hình database
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'theemma');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
+// Cấu hình website
+define('SITE_NAME', 'The Emma');
+define('SITE_URL', 'http://localhost/theemma');
+define('ADMIN_URL', SITE_URL . '/admin');
+define('UPLOAD_DIR', __DIR__ . '/../uploads');
+
+// Tạo thư mục uploads nếu chưa tồn tại
+if (!file_exists(UPLOAD_DIR)) {
+    mkdir(UPLOAD_DIR, 0777, true);
+}
+
+// Class Database
+class Database {
+    private $pdo;
+    
+    public function __construct() {
+        try {
+            $this->pdo = new PDO(
+                "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
+                DB_USER,
+                DB_PASS,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false
+                ]
+            );
+        } catch (PDOException $e) {
+            die("Lỗi kết nối database: " . $e->getMessage());
+        }
+    }
+    
+    public function select($query, $params = []) {
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+    
+    public function selectOne($query, $params = []) {
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetch();
+    }
+    
+    public function insert($query, $params = []) {
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+        return $this->pdo->lastInsertId();
+    }
+    
+    public function update($query, $params = []) {
+        $stmt = $this->pdo->prepare($query);
+        return $stmt->execute($params);
+    }
+    
+    public function delete($query, $params = []) {
+        $stmt = $this->pdo->prepare($query);
+        return $stmt->execute($params);
+    }
+}
+
+// Khởi tạo kết nối database
+$db = new Database();
+
+// Site configuration
+define('ADMIN_EMAIL', 'theemma1905@gmail.com');
+
+// Error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Time zone
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
+// Security
+define('HASH_SALT', 'the_emma_salt_2024');
+
+// File upload configuration
+define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
+define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/gif']);
+
+// API configuration
+define('API_KEY', 'the_emma_api_key_2024');
+define('API_URL', 'http://localhost/the_emma/api');
+
+// Cart configuration
+define('CART_EXPIRY', 24 * 60 * 60); // 24 hours
+
+// Order status
+define('ORDER_STATUS', [
+    'pending' => 'Chờ xác nhận',
+    'confirmed' => 'Đã xác nhận',
+    'processing' => 'Đang xử lý',
+    'shipping' => 'Đang giao hàng',
+    'delivered' => 'Đã giao hàng',
+    'cancelled' => 'Đã hủy'
+]);
+
+// Payment methods
+define('PAYMENT_METHODS', [
+    'cod' => 'Thanh toán khi nhận hàng',
+    'banking' => 'Chuyển khoản ngân hàng',
+    'momo' => 'Ví MoMo',
+    'zalopay' => 'Ví ZaloPay'
+]);
