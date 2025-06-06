@@ -83,8 +83,11 @@ $total = $db->selectOne(
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1><?php echo SITE_NAME; ?></h1>
-                <p>Admin Panel</p>
+                <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
+                <div style="display:inline-block;vertical-align:middle;">
+                    <h1 style="margin:0;"><?php echo SITE_NAME; ?></h1>
+                    <p style="margin:0;">Admin Panel</p>
+                </div>
             </div>
             
             <nav class="sidebar-nav">
@@ -138,176 +141,175 @@ $total = $db->selectOne(
         
         <!-- Main Content -->
         <main class="main-content">
-            <header class="main-header">
-                <div class="header-left">
-                    <button class="menu-toggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h2>Quản lý người dùng</h2>
-                </div>
-                
-                <div class="header-right">
-                    <div class="user-menu">
-                        <img src="<?php echo $user['avatar'] ?? '../Assets/images/default-avatar.png'; ?>" alt="Avatar">
-                        <span><?php echo $user['name']; ?></span>
+            <div class="content-inner">
+                <header class="main-header">
+                    <div class="header-left">
+                        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                        <h2>Quản lý người dùng</h2>
                     </div>
-                </div>
-            </header>
-            
-            <div class="content-wrapper">
-                <!-- Filters -->
-                <div class="filters">
-                    <form action="" method="GET" class="filter-form">
-                        <div class="form-group">
-                            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm người dùng...">
-                        </div>
-                        
-                        <div class="form-group">
-                            <select name="role">
-                                <option value="">Tất cả vai trò</option>
-                                <option value="admin" <?php echo $role === 'admin' ? 'selected' : ''; ?>>Quản trị viên</option>
-                                <option value="customer" <?php echo $role === 'customer' ? 'selected' : ''; ?>>Khách hàng</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <select name="status">
-                                <option value="">Tất cả trạng thái</option>
-                                <option value="active" <?php echo $status === 'active' ? 'selected' : ''; ?>>Đang hoạt động</option>
-                                <option value="inactive" <?php echo $status === 'inactive' ? 'selected' : ''; ?>>Đã khóa</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <select name="sort">
-                                <option value="created_at_desc" <?php echo $sort === 'created_at_desc' ? 'selected' : ''; ?>>Mới nhất</option>
-                                <option value="created_at_asc" <?php echo $sort === 'created_at_asc' ? 'selected' : ''; ?>>Cũ nhất</option>
-                                <option value="name_asc" <?php echo $sort === 'name_asc' ? 'selected' : ''; ?>>Tên A-Z</option>
-                                <option value="name_desc" <?php echo $sort === 'name_desc' ? 'selected' : ''; ?>>Tên Z-A</option>
-                                <option value="email_asc" <?php echo $sort === 'email_asc' ? 'selected' : ''; ?>>Email A-Z</option>
-                                <option value="email_desc" <?php echo $sort === 'email_desc' ? 'selected' : ''; ?>>Email Z-A</option>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="btn-filter">
-                            <i class="fas fa-filter"></i>
-                            Lọc
-                        </button>
-                    </form>
                     
-                    <a href="user-form.php" class="btn-add">
-                        <i class="fas fa-plus"></i>
-                        Thêm người dùng
-                    </a>
-                </div>
+                    <div class="header-right">
+                        <div class="user-menu">
+                            <span><?php echo $user['name']; ?></span>
+                        </div>
+                    </div>
+                </header>
                 
-                <!-- Users Table -->
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Thông tin</th>
-                                <th>Vai trò</th>
-                                <th>Trạng thái</th>
-                                <th>Đơn hàng</th>
-                                <th>Tổng chi tiêu</th>
-                                <th>Ngày tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($users as $u): ?>
-                            <tr>
-                                <td><?php echo $u['id']; ?></td>
-                                <td>
-                                    <div class="user-info">
-                                        <img src="<?php echo $u['avatar'] ? '../uploads/' . $u['avatar'] : '../Assets/images/default-avatar.png'; ?>" 
-                                             alt="<?php echo htmlspecialchars($u['name']); ?>"
-                                             class="user-avatar">
-                                        <div class="user-details">
-                                            <div class="user-name"><?php echo htmlspecialchars($u['name']); ?></div>
-                                            <div class="user-contact">
-                                                <span><i class="fas fa-envelope"></i> <?php echo $u['email']; ?></span>
-                                                <?php if ($u['phone']): ?>
-                                                <span><i class="fas fa-phone"></i> <?php echo $u['phone']; ?></span>
-                                                <?php endif; ?>
+                <div class="content-wrapper">
+                    <!-- Filters -->
+                    <div class="filters">
+                        <form action="" method="GET" class="filter-form">
+                            <div class="form-group">
+                                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm người dùng...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <select name="role">
+                                    <option value="">Tất cả vai trò</option>
+                                    <option value="admin" <?php echo $role === 'admin' ? 'selected' : ''; ?>>Quản trị viên</option>
+                                    <option value="customer" <?php echo $role === 'customer' ? 'selected' : ''; ?>>Khách hàng</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <select name="status">
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="active" <?php echo $status === 'active' ? 'selected' : ''; ?>>Đang hoạt động</option>
+                                    <option value="inactive" <?php echo $status === 'inactive' ? 'selected' : ''; ?>>Đã khóa</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <select name="sort">
+                                    <option value="created_at_desc" <?php echo $sort === 'created_at_desc' ? 'selected' : ''; ?>>Mới nhất</option>
+                                    <option value="created_at_asc" <?php echo $sort === 'created_at_asc' ? 'selected' : ''; ?>>Cũ nhất</option>
+                                    <option value="name_asc" <?php echo $sort === 'name_asc' ? 'selected' : ''; ?>>Tên A-Z</option>
+                                    <option value="name_desc" <?php echo $sort === 'name_desc' ? 'selected' : ''; ?>>Tên Z-A</option>
+                                    <option value="email_asc" <?php echo $sort === 'email_asc' ? 'selected' : ''; ?>>Email A-Z</option>
+                                    <option value="email_desc" <?php echo $sort === 'email_desc' ? 'selected' : ''; ?>>Email Z-A</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn-filter">
+                                <i class="fas fa-filter"></i>
+                                Lọc
+                            </button>
+                        </form>
+                        
+                        <a href="user-form.php" class="btn-add">
+                            <i class="fas fa-plus"></i>
+                            Thêm người dùng
+                        </a>
+                    </div>
+                    
+                    <!-- Users Table -->
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Thông tin</th>
+                                    <th>Vai trò</th>
+                                    <th>Trạng thái</th>
+                                    <th>Đơn hàng</th>
+                                    <th>Tổng chi tiêu</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($users as $u): ?>
+                                <tr>
+                                    <td><?php echo $u['id']; ?></td>
+                                    <td>
+                                        <div class="user-info">
+                                            <img src="<?php echo $u['avatar'] ? '../uploads/' . $u['avatar'] : '../Assets/images/default-avatar.png'; ?>" 
+                                                 alt="<?php echo htmlspecialchars($u['name']); ?>"
+                                                 class="user-avatar">
+                                            <div class="user-details">
+                                                <div class="user-name"><?php echo htmlspecialchars($u['name']); ?></div>
+                                                <div class="user-contact">
+                                                    <span><i class="fas fa-envelope"></i> <?php echo $u['email']; ?></span>
+                                                    <?php if ($u['phone']): ?>
+                                                    <span><i class="fas fa-phone"></i> <?php echo $u['phone']; ?></span>
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="role-badge <?php echo $u['role']; ?>">
-                                        <?php echo $u['role'] === 'admin' ? 'Quản trị viên' : 'Khách hàng'; ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <select class="status-select" data-id="<?php echo $u['id']; ?>" data-type="users" data-original-status="<?php echo $u['status']; ?>">
-                                        <option value="active" <?php echo $u['status'] === 'active' ? 'selected' : ''; ?>>Đang hoạt động</option>
-                                        <option value="inactive" <?php echo $u['status'] === 'inactive' ? 'selected' : ''; ?>>Đã khóa</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <a href="orders.php?user_id=<?php echo $u['id']; ?>" class="order-count">
-                                        <?php echo $u['total_orders']; ?> đơn
-                                    </a>
-                                </td>
-                                <td>
-                                    <?php if ($u['total_spent']): ?>
-                                    <span class="total-spent"><?php echo number_format($u['total_spent']); ?> VNĐ</span>
-                                    <?php else: ?>
-                                    <span class="no-spent">Chưa có</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($u['created_at'])); ?></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a href="user-form.php?id=<?php echo $u['id']; ?>" class="btn-edit" title="Sửa">
-                                            <i class="fas fa-edit"></i>
+                                    </td>
+                                    <td>
+                                        <span class="role-badge <?php echo $u['role']; ?>">
+                                            <?php echo $u['role'] === 'admin' ? 'Quản trị viên' : 'Khách hàng'; ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <select class="status-select" data-id="<?php echo $u['id']; ?>" data-type="users" data-original-status="<?php echo $u['status']; ?>">
+                                            <option value="active" <?php echo $u['status'] === 'active' ? 'selected' : ''; ?>>Đang hoạt động</option>
+                                            <option value="inactive" <?php echo $u['status'] === 'inactive' ? 'selected' : ''; ?>>Đã khóa</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <a href="orders.php?user_id=<?php echo $u['id']; ?>" class="order-count">
+                                            <?php echo $u['total_orders']; ?> đơn
                                         </a>
-                                        <?php if ($u['id'] !== $user['id']): ?>
-                                        <button class="btn-delete" data-id="<?php echo $u['id']; ?>" data-type="users" title="Xóa">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                    </td>
+                                    <td>
+                                        <?php if ($u['total_spent']): ?>
+                                        <span class="total-spent"><?php echo number_format($u['total_spent']); ?> VNĐ</span>
+                                        <?php else: ?>
+                                        <span class="no-spent">Chưa có</span>
                                         <?php endif; ?>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                                    </td>
+                                    <td><?php echo date('d/m/Y H:i', strtotime($u['created_at'])); ?></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="user-form.php?id=<?php echo $u['id']; ?>" class="btn-edit" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <?php if ($u['id'] !== $user['id']): ?>
+                                            <button class="btn-delete" data-id="<?php echo $u['id']; ?>" data-type="users" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <?php if ($total > $limit): ?>
+                    <div class="pagination">
+                        <?php
+                        $totalPages = ceil($total / $limit);
+                        $currentPage = $page;
+                        $range = 2;
+                        
+                        // Previous button
+                        if ($currentPage > 1) {
+                            echo '<a href="?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link">';
+                            echo '<i class="fas fa-chevron-left"></i>';
+                            echo '</a>';
+                        }
+                        
+                        // Page numbers
+                        for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++) {
+                            $active = $i === $currentPage ? 'active' : '';
+                            echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link ' . $active . '">' . $i . '</a>';
+                        }
+                        
+                        // Next button
+                        if ($currentPage < $totalPages) {
+                            echo '<a href="?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link">';
+                            echo '<i class="fas fa-chevron-right"></i>';
+                            echo '</a>';
+                        }
+                        ?>
+                    </div>
+                    <?php endif; ?>
                 </div>
-                
-                <!-- Pagination -->
-                <?php if ($total > $limit): ?>
-                <div class="pagination">
-                    <?php
-                    $totalPages = ceil($total / $limit);
-                    $currentPage = $page;
-                    $range = 2;
-                    
-                    // Previous button
-                    if ($currentPage > 1) {
-                        echo '<a href="?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link">';
-                        echo '<i class="fas fa-chevron-left"></i>';
-                        echo '</a>';
-                    }
-                    
-                    // Page numbers
-                    for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++) {
-                        $active = $i === $currentPage ? 'active' : '';
-                        echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link ' . $active . '">' . $i . '</a>';
-                    }
-                    
-                    // Next button
-                    if ($currentPage < $totalPages) {
-                        echo '<a href="?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link">';
-                        echo '<i class="fas fa-chevron-right"></i>';
-                        echo '</a>';
-                    }
-                    ?>
-                </div>
-                <?php endif; ?>
             </div>
         </main>
     </div>

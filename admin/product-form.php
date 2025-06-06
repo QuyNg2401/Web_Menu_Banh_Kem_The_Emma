@@ -38,9 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sale_price = !empty($_POST['sale_price']) ? floatval($_POST['sale_price']) : null;
     $description = trim($_POST['description'] ?? '');
     $ingredients = trim($_POST['ingredients'] ?? '');
-    $weight = trim($_POST['weight'] ?? '');
-    $size = trim($_POST['size'] ?? '');
-    $status = $_POST['status'] ?? 'active';
+    $sizeArr = $_POST['size'] ?? [];
+    $size = is_array($sizeArr) ? implode(',', $sizeArr) : '';
     $featured = isset($_POST['featured']) ? 1 : 0;
     
     // Validate
@@ -108,10 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'sale_price' => $sale_price,
             'description' => $description,
             'ingredients' => $ingredients,
-            'weight' => $weight,
             'size' => $size,
             'image' => $image,
-            'status' => $status,
             'featured' => $featured
         ];
         
@@ -142,8 +139,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1><?php echo SITE_NAME; ?></h1>
-                <p>Admin Panel</p>
+                <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
+                <div style="display:inline-block;vertical-align:middle;">
+                    <h1 style="margin:0;"><?php echo SITE_NAME; ?></h1>
+                    <p style="margin:0;">Admin Panel</p>
+                </div>
             </div>
             
             <nav class="sidebar-nav">
@@ -197,136 +197,131 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <!-- Main Content -->
         <main class="main-content">
-            <header class="main-header">
-                <div class="header-left">
-                    <button class="menu-toggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h2><?php echo $id ? 'Sửa' : 'Thêm'; ?> sản phẩm</h2>
-                </div>
-                
-                <div class="header-right">
-                    <div class="user-menu">
-                        <img src="<?php echo $user['avatar'] ?? '../Assets/images/default-avatar.png'; ?>" alt="Avatar">
-                        <span><?php echo $user['name']; ?></span>
-                    </div>
-                </div>
-            </header>
-            
-            <div class="content-wrapper">
-                <?php if ($success): ?>
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    Sản phẩm đã được <?php echo $id ? 'cập nhật' : 'thêm mới'; ?> thành công!
-                </div>
-                <?php endif; ?>
-                
-                <form action="" method="POST" enctype="multipart/form-data" class="product-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="name">Tên sản phẩm <span class="required">*</span></label>
-                            <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($product['name'] ?? ''); ?>" required>
-                            <?php if (isset($errors['name'])): ?>
-                            <span class="error"><?php echo $errors['name']; ?></span>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="category_id">Danh mục <span class="required">*</span></label>
-                            <select id="category_id" name="category_id" required>
-                                <option value="">Chọn danh mục</option>
-                                <?php foreach ($categories as $category): ?>
-                                <option value="<?php echo $category['id']; ?>" <?php echo ($product['category_id'] ?? '') == $category['id'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($category['name']); ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?php if (isset($errors['category_id'])): ?>
-                            <span class="error"><?php echo $errors['category_id']; ?></span>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="price">Giá gốc <span class="required">*</span></label>
-                            <input type="number" id="price" name="price" value="<?php echo $product['price'] ?? ''; ?>" min="0" step="1000" required>
-                            <?php if (isset($errors['price'])): ?>
-                            <span class="error"><?php echo $errors['price']; ?></span>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="sale_price">Giá khuyến mãi</label>
-                            <input type="number" id="sale_price" name="sale_price" value="<?php echo $product['sale_price'] ?? ''; ?>" min="0" step="1000">
-                            <?php if (isset($errors['sale_price'])): ?>
-                            <span class="error"><?php echo $errors['sale_price']; ?></span>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="weight">Khối lượng</label>
-                            <input type="text" id="weight" name="weight" value="<?php echo htmlspecialchars($product['weight'] ?? ''); ?>" placeholder="VD: 500g">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="size">Kích thước</label>
-                            <input type="text" id="size" name="size" value="<?php echo htmlspecialchars($product['size'] ?? ''); ?>" placeholder="VD: 15x15x10cm">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="status">Trạng thái</label>
-                            <select id="status" name="status">
-                                <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Đang bán</option>
-                                <option value="inactive" <?php echo ($product['status'] ?? '') === 'inactive' ? 'selected' : ''; ?>>Ngừng bán</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="featured" value="1" <?php echo ($product['featured'] ?? 0) ? 'checked' : ''; ?>>
-                                <span>Sản phẩm nổi bật</span>
-                            </label>
-                        </div>
-                        
-                        <div class="form-group full-width">
-                            <label for="description">Mô tả <span class="required">*</span></label>
-                            <textarea id="description" name="description" rows="5" required><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea>
-                            <?php if (isset($errors['description'])): ?>
-                            <span class="error"><?php echo $errors['description']; ?></span>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="form-group full-width">
-                            <label for="ingredients">Thành phần</label>
-                            <textarea id="ingredients" name="ingredients" rows="3"><?php echo htmlspecialchars($product['ingredients'] ?? ''); ?></textarea>
-                        </div>
-                        
-                        <div class="form-group full-width">
-                            <label for="image">Hình ảnh</label>
-                            <?php if (!empty($product['image'])): ?>
-                            <div class="current-image">
-                                <img src="../uploads/<?php echo $product['image']; ?>" alt="Current image">
-                                <span>Ảnh hiện tại</span>
-                            </div>
-                            <?php endif; ?>
-                            <input type="file" id="image" name="image" accept="image/*">
-                            <?php if (isset($errors['image'])): ?>
-                            <span class="error"><?php echo $errors['image']; ?></span>
-                            <?php endif; ?>
-                            <small>Định dạng: JPG, PNG, GIF. Kích thước tối đa: 2MB</small>
-                        </div>
+            <div class="content-inner">
+                <header class="main-header">
+                    <div class="header-left">
+                        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                        <h2><?php echo $id ? 'Sửa' : 'Thêm'; ?> sản phẩm</h2>
                     </div>
                     
-                    <div class="form-actions">
-                        <a href="products.php" class="btn-cancel">
-                            <i class="fas fa-times"></i>
-                            Hủy
-                        </a>
-                        <button type="submit" class="btn-submit">
-                            <i class="fas fa-save"></i>
-                            <?php echo $id ? 'Cập nhật' : 'Thêm mới'; ?>
-                        </button>
+                    <div class="header-right">
+                        <div class="user-menu">
+                            <span><?php echo $user['name']; ?></span>
+                        </div>
                     </div>
-                </form>
+                </header>
+                
+                <div class="content-wrapper">
+                    <?php if ($success): ?>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        Sản phẩm đã được <?php echo $id ? 'cập nhật' : 'thêm mới'; ?> thành công!
+                    </div>
+                    <?php endif; ?>
+                    
+                    <form action="" method="POST" enctype="multipart/form-data" class="product-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="name">Tên sản phẩm <span class="required">*</span></label>
+                                <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($product['name'] ?? ''); ?>" required>
+                                <?php if (isset($errors['name'])): ?>
+                                <span class="error"><?php echo $errors['name']; ?></span>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="category_id">Danh mục <span class="required">*</span></label>
+                                <select id="category_id" name="category_id" required>
+                                    <option value="">Chọn danh mục</option>
+                                    <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo $category['id']; ?>" <?php echo ($product['category_id'] ?? '') == $category['id'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if (isset($errors['category_id'])): ?>
+                                <span class="error"><?php echo $errors['category_id']; ?></span>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="price">Giá gốc <span class="required">*</span></label>
+                                <input type="number" id="price" name="price" value="<?php echo $product['price'] ?? ''; ?>" min="0" step="1000" required>
+                                <?php if (isset($errors['price'])): ?>
+                                <span class="error"><?php echo $errors['price']; ?></span>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="sale_price">Giá khuyến mãi</label>
+                                <input type="number" id="sale_price" name="sale_price" value="<?php echo $product['sale_price'] ?? ''; ?>" min="0" step="1000">
+                                <?php if (isset($errors['sale_price'])): ?>
+                                <span class="error"><?php echo $errors['sale_price']; ?></span>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Kích thước</label>
+                                <div class="size-checkbox-group" style="display: flex; gap: 24px;">
+                                    <?php
+                                    $sizeOptions = ['16cm', '18cm', '20cm'];
+                                    $selectedSizes = isset($product['size']) ? explode(',', $product['size']) : [];
+                                    foreach ($sizeOptions as $opt) {
+                                        $checked = in_array($opt, $selectedSizes) ? 'checked' : '';
+                                        echo '<label class="checkbox-label"><input type="checkbox" name="size[]" value="'.$opt.'" '.$checked.'> '.$opt.'</label>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="featured" value="1" <?php echo ($product['featured'] ?? 0) ? 'checked' : ''; ?>>
+                                    <span>Sản phẩm nổi bật</span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="description">Mô tả <span class="required">*</span></label>
+                                <textarea id="description" name="description" rows="5" required><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea>
+                                <?php if (isset($errors['description'])): ?>
+                                <span class="error"><?php echo $errors['description']; ?></span>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="ingredients">Thành phần</label>
+                                <textarea id="ingredients" name="ingredients" rows="3"><?php echo htmlspecialchars($product['ingredients'] ?? ''); ?></textarea>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="image">Hình ảnh</label>
+                                <?php if (!empty($product['image'])): ?>
+                                <div class="current-image">
+                                    <img src="../uploads/<?php echo $product['image']; ?>" alt="Current image">
+                                    <span>Ảnh hiện tại</span>
+                                </div>
+                                <?php endif; ?>
+                                <input type="file" id="image" name="image" accept="image/*">
+                                <?php if (isset($errors['image'])): ?>
+                                <span class="error"><?php echo $errors['image']; ?></span>
+                                <?php endif; ?>
+                                <small>Định dạng: JPG, PNG, GIF. Kích thước tối đa: 2MB</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <a href="products.php" class="btn-cancel">
+                                <i class="fas fa-times"></i>
+                                Hủy
+                            </a>
+                            <button type="submit" class="btn-submit">
+                                <i class="fas fa-save"></i>
+                                <?php echo $id ? 'Cập nhật' : 'Thêm mới'; ?>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </main>
     </div>

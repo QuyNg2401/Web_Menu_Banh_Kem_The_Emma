@@ -49,8 +49,11 @@ $topProducts = $db->select(
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1><?php echo SITE_NAME; ?></h1>
-                <p>Admin Panel</p>
+                <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
+                <div style="display:inline-block;vertical-align:middle;">
+                    <h1 style="margin:0;"><?php echo SITE_NAME; ?></h1>
+                    <p style="margin:0;">Admin Panel</p>
+                </div>
             </div>
             
             <nav class="sidebar-nav">
@@ -114,7 +117,6 @@ $topProducts = $db->select(
                 
                 <div class="header-right">
                     <div class="user-menu">
-                        <img src="<?php echo $user['avatar'] ?? '../Assets/images/default-avatar.png'; ?>" alt="Avatar">
                         <span><?php echo $user['name']; ?></span>
                     </div>
                 </div>
@@ -130,6 +132,7 @@ $topProducts = $db->select(
                         <div class="stat-info">
                             <h3>Tổng đơn hàng</h3>
                             <p><?php echo number_format($stats['total_orders']); ?></p>
+                            <div class="stat-trend">Tăng 0%</div>
                         </div>
                     </div>
                     
@@ -140,6 +143,7 @@ $topProducts = $db->select(
                         <div class="stat-info">
                             <h3>Tổng sản phẩm</h3>
                             <p><?php echo number_format($stats['total_products']); ?></p>
+                            <div class="stat-trend">Tăng 0%</div>
                         </div>
                     </div>
                     
@@ -150,6 +154,7 @@ $topProducts = $db->select(
                         <div class="stat-info">
                             <h3>Tổng khách hàng</h3>
                             <p><?php echo number_format($stats['total_users']); ?></p>
+                            <div class="stat-trend">Giảm 0%</div>
                         </div>
                     </div>
                     
@@ -160,73 +165,80 @@ $topProducts = $db->select(
                         <div class="stat-info">
                             <h3>Doanh thu</h3>
                             <p><?php echo number_format($stats['total_revenue']); ?> VNĐ</p>
+                            <div class="stat-trend">Tăng 0%</div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Đơn hàng mới nhất -->
-                <div class="dashboard-section">
-                    <div class="section-header">
-                        <h3>Đơn hàng mới nhất</h3>
-                        <a href="orders.php" class="view-all">Xem tất cả</a>
-                    </div>
-                    
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Khách hàng</th>
-                                    <th>Tổng tiền</th>
-                                    <th>Trạng thái</th>
-                                    <th>Ngày đặt</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($latestOrders as $order): ?>
-                                <tr>
-                                    <td>#<?php echo $order['id']; ?></td>
-                                    <td><?php echo $order['customer_name']; ?></td>
-                                    <td><?php echo number_format($order['total_amount']); ?> VNĐ</td>
-                                    <td>
-                                        <span class="status-badge status-<?php echo $order['status']; ?>">
-                                            <?php echo ORDER_STATUS[$order['status']]; ?>
-                                        </span>
-                                    </td>
-                                    <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
-                                    <td>
-                                        <a href="order-detail.php?id=<?php echo $order['id']; ?>" class="btn-view">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Sản phẩm bán chạy -->
-                <div class="dashboard-section">
-                    <div class="section-header">
-                        <h3>Sản phẩm bán chạy</h3>
-                        <a href="products.php" class="view-all">Xem tất cả</a>
-                    </div>
-                    
-                    <div class="products-grid">
-                        <?php foreach ($topProducts as $product): ?>
-                        <div class="product-card">
-                            <div class="product-image">
-                                <img src="<?php echo $product['image'] ? '../uploads/' . $product['image'] : '../Assets/images/no-image.png'; ?>" alt="<?php echo $product['name']; ?>">
-                            </div>
-                            <div class="product-info">
-                                <h4><?php echo $product['name']; ?></h4>
-                                <p class="price"><?php echo number_format($product['price']); ?> VNĐ</p>
-                                <p class="sales">Đã bán: <?php echo $product['order_count']; ?></p>
-                            </div>
+                <!-- Đơn hàng mới nhất và Sản phẩm bán chạy -->
+                <div class="dashboard-row">
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h3>Đơn hàng mới nhất</h3>
+                            <a href="orders.php" class="view-all">Xem tất cả</a>
                         </div>
-                        <?php endforeach; ?>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Khách hàng</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($latestOrders as $order): ?>
+                                    <tr>
+                                        <td>#<?php echo $order['id']; ?></td>
+                                        <td><?php echo $order['customer_name']; ?></td>
+                                        <td><?php echo number_format($order['total_amount']); ?> VNĐ</td>
+                                        <td>
+                                            <span class="status-badge status-<?php echo $order['status']; ?>">
+                                                <?php echo ORDER_STATUS[$order['status']]; ?>
+                                            </span>
+                                        </td>
+                                        <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
+                                        <td>
+                                            <a href="order-detail.php?id=<?php echo $order['id']; ?>" class="btn-view">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h3>Sản phẩm bán chạy</h3>
+                            <a href="products.php" class="view-all">Xem tất cả</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Giá</th>
+                                        <th>Đã bán</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($topProducts as $product): ?>
+                                    <tr>
+                                        <td><?php echo $product['id']; ?></td>
+                                        <td><?php echo htmlspecialchars($product['name']); ?></td>
+                                        <td><?php echo number_format($product['price']); ?> VNĐ</td>
+                                        <td><?php echo $product['order_count']; ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -234,5 +246,21 @@ $topProducts = $db->select(
     </div>
     
     <script src="../Assets/js/admin.js"></script>
+    <script>
+    // Responsive sidebar cho mobile/tablet
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    menuToggle && menuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sidebar.classList.toggle('active');
+    });
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1080 && sidebar.classList.contains('active')) {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        }
+    });
+    </script>
 </body>
 </html> 

@@ -92,8 +92,11 @@ $total = $db->selectOne(
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1><?php echo SITE_NAME; ?></h1>
-                <p>Admin Panel</p>
+                <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
+                <div style="display:inline-block;vertical-align:middle;">
+                    <h1 style="margin:0;"><?php echo SITE_NAME; ?></h1>
+                    <p style="margin:0;">Admin Panel</p>
+                </div>
             </div>
             
             <nav class="sidebar-nav">
@@ -147,179 +150,194 @@ $total = $db->selectOne(
         
         <!-- Main Content -->
         <main class="main-content">
-            <header class="main-header">
-                <div class="header-left">
-                    <button class="menu-toggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h2>Quản lý đơn hàng</h2>
-                </div>
-                
-                <div class="header-right">
-                    <div class="user-menu">
-                        <img src="<?php echo $user['avatar'] ?? '../Assets/images/default-avatar.png'; ?>" alt="Avatar">
-                        <span><?php echo $user['name']; ?></span>
+            <div class="content-inner">
+                <header class="main-header">
+                    <div class="header-left">
+                        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                        <h2>Quản lý đơn hàng</h2>
                     </div>
-                </div>
-            </header>
-            
-            <div class="content-wrapper">
-                <!-- Filters -->
-                <div class="filters">
-                    <form action="" method="GET" class="filter-form">
-                        <div class="form-group">
-                            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm đơn hàng...">
+                    
+                    <div class="header-right">
+                        <div class="user-menu">
+                            <span><?php echo $user['name']; ?></span>
                         </div>
-                        
-                        <div class="form-group">
-                            <select name="status">
-                                <option value="">Tất cả trạng thái</option>
-                                <?php foreach (ORDER_STATUS as $key => $value): ?>
-                                <option value="<?php echo $key; ?>" <?php echo $status === $key ? 'selected' : ''; ?>>
-                                    <?php echo $value; ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <input type="date" name="date_from" value="<?php echo $date_from; ?>" placeholder="Từ ngày">
-                        </div>
-                        
-                        <div class="form-group">
-                            <input type="date" name="date_to" value="<?php echo $date_to; ?>" placeholder="Đến ngày">
-                        </div>
-                        
-                        <div class="form-group">
-                            <select name="sort">
-                                <option value="created_at_desc" <?php echo $sort === 'created_at_desc' ? 'selected' : ''; ?>>Mới nhất</option>
-                                <option value="created_at_asc" <?php echo $sort === 'created_at_asc' ? 'selected' : ''; ?>>Cũ nhất</option>
-                                <option value="total_asc" <?php echo $sort === 'total_asc' ? 'selected' : ''; ?>>Tổng tiền tăng dần</option>
-                                <option value="total_desc" <?php echo $sort === 'total_desc' ? 'selected' : ''; ?>>Tổng tiền giảm dần</option>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="btn-filter">
-                            <i class="fas fa-filter"></i>
-                            Lọc
-                        </button>
-                    </form>
-                </div>
+                    </div>
+                </header>
                 
-                <!-- Orders Table -->
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Mã đơn</th>
-                                <th>Khách hàng</th>
-                                <th>Sản phẩm</th>
-                                <th>Tổng tiền</th>
-                                <th>Trạng thái</th>
-                                <th>Ngày đặt</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($orders as $order): ?>
-                            <tr>
-                                <td>
-                                    <a href="order-detail.php?id=<?php echo $order['id']; ?>" class="order-code">
-                                        #<?php echo $order['order_code']; ?>
-                                    </a>
-                                </td>
-                                <td>
-                                    <div class="customer-info">
-                                        <div class="customer-name"><?php echo htmlspecialchars($order['customer_name']); ?></div>
-                                        <div class="customer-contact">
-                                            <span><i class="fas fa-phone"></i> <?php echo $order['customer_phone']; ?></span>
-                                            <?php if ($order['customer_email']): ?>
-                                            <span><i class="fas fa-envelope"></i> <?php echo $order['customer_email']; ?></span>
+                <div class="content-wrapper">
+                    <!-- Filters -->
+                    <div class="filters">
+                        <form action="" method="GET" class="filter-form">
+                            <div class="form-group">
+                                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm đơn hàng...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <select name="status">
+                                    <option value="">Tất cả trạng thái</option>
+                                    <?php foreach (ORDER_STATUS as $key => $value): ?>
+                                    <option value="<?php echo $key; ?>" <?php echo $status === $key ? 'selected' : ''; ?>>
+                                        <?php echo $value; ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <input type="date" name="date_from" value="<?php echo $date_from; ?>" placeholder="Từ ngày">
+                            </div>
+                            
+                            <div class="form-group">
+                                <input type="date" name="date_to" value="<?php echo $date_to; ?>" placeholder="Đến ngày">
+                            </div>
+                            
+                            <div class="form-group">
+                                <select name="sort">
+                                    <option value="created_at_desc" <?php echo $sort === 'created_at_desc' ? 'selected' : ''; ?>>Mới nhất</option>
+                                    <option value="created_at_asc" <?php echo $sort === 'created_at_asc' ? 'selected' : ''; ?>>Cũ nhất</option>
+                                    <option value="total_asc" <?php echo $sort === 'total_asc' ? 'selected' : ''; ?>>Tổng tiền tăng dần</option>
+                                    <option value="total_desc" <?php echo $sort === 'total_desc' ? 'selected' : ''; ?>>Tổng tiền giảm dần</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn-filter">
+                                <i class="fas fa-filter"></i>
+                                Lọc
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Orders Table -->
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($orders as $order): ?>
+                                <tr>
+                                    <td>
+                                        <a href="order-detail.php?id=<?php echo $order['id']; ?>" class="order-code">
+                                            #<?php echo $order['order_code']; ?>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <div class="customer-name"><?php echo htmlspecialchars($order['customer_name']); ?></div>
+                                            <div class="customer-contact">
+                                                <span><i class="fas fa-phone"></i> <?php echo $order['customer_phone']; ?></span>
+                                                <?php if ($order['customer_email']): ?>
+                                                <span><i class="fas fa-envelope"></i> <?php echo $order['customer_email']; ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="order-items">
+                                            <span class="items-count"><?php echo $order['total_items']; ?> sản phẩm</span>
+                                            <div class="items-preview" title="<?php echo htmlspecialchars($order['product_names']); ?>">
+                                                <?php echo htmlspecialchars($order['product_names']); ?>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="order-total">
+                                            <?php echo number_format($order['total_amount']); ?> VNĐ
+                                            <?php if ($order['payment_method']): ?>
+                                            <span class="payment-method">
+                                                <i class="fas fa-credit-card"></i>
+                                                <?php echo PAYMENT_METHODS[$order['payment_method']] ?? $order['payment_method']; ?>
+                                            </span>
                                             <?php endif; ?>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="order-items">
-                                        <span class="items-count"><?php echo $order['total_items']; ?> sản phẩm</span>
-                                        <div class="items-preview" title="<?php echo htmlspecialchars($order['product_names']); ?>">
-                                            <?php echo htmlspecialchars($order['product_names']); ?>
+                                    </td>
+                                    <td>
+                                        <select class="status-select" data-id="<?php echo $order['id']; ?>" data-type="orders" data-original-status="<?php echo $order['status']; ?>">
+                                            <?php foreach (ORDER_STATUS as $key => $value): ?>
+                                            <option value="<?php echo $key; ?>" <?php echo $order['status'] === $key ? 'selected' : ''; ?>>
+                                                <?php echo $value; ?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </td>
+                                    <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="order-detail.php?id=<?php echo $order['id']; ?>" class="btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <?php if ($order['status'] === 'pending'): ?>
+                                            <button class="btn-delete" data-id="<?php echo $order['id']; ?>" data-type="orders" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <?php endif; ?>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="order-total">
-                                        <?php echo number_format($order['total_amount']); ?> VNĐ
-                                        <?php if ($order['payment_method']): ?>
-                                        <span class="payment-method">
-                                            <i class="fas fa-credit-card"></i>
-                                            <?php echo PAYMENT_METHODS[$order['payment_method']] ?? $order['payment_method']; ?>
-                                        </span>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    <select class="status-select" data-id="<?php echo $order['id']; ?>" data-type="orders" data-original-status="<?php echo $order['status']; ?>">
-                                        <?php foreach (ORDER_STATUS as $key => $value): ?>
-                                        <option value="<?php echo $key; ?>" <?php echo $order['status'] === $key ? 'selected' : ''; ?>>
-                                            <?php echo $value; ?>
-                                        </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a href="order-detail.php?id=<?php echo $order['id']; ?>" class="btn-view" title="Xem chi tiết">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <?php if ($order['status'] === 'pending'): ?>
-                                        <button class="btn-delete" data-id="<?php echo $order['id']; ?>" data-type="orders" title="Xóa">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <?php if ($total > $limit): ?>
+                    <div class="pagination">
+                        <?php
+                        $totalPages = ceil($total / $limit);
+                        $currentPage = $page;
+                        $range = 2;
+                        
+                        // Previous button
+                        if ($currentPage > 1) {
+                            echo '<a href="?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '&status=' . $status . '&date_from=' . $date_from . '&date_to=' . $date_to . '&sort=' . $sort . '" class="page-link">';
+                            echo '<i class="fas fa-chevron-left"></i>';
+                            echo '</a>';
+                        }
+                        
+                        // Page numbers
+                        for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++) {
+                            $active = $i === $currentPage ? 'active' : '';
+                            echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '&status=' . $status . '&date_from=' . $date_from . '&date_to=' . $date_to . '&sort=' . $sort . '" class="page-link ' . $active . '">' . $i . '</a>';
+                        }
+                        
+                        // Next button
+                        if ($currentPage < $totalPages) {
+                            echo '<a href="?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '&status=' . $status . '&date_from=' . $date_from . '&date_to=' . $date_to . '&sort=' . $sort . '" class="page-link">';
+                            echo '<i class="fas fa-chevron-right"></i>';
+                            echo '</a>';
+                        }
+                        ?>
+                    </div>
+                    <?php endif; ?>
                 </div>
-                
-                <!-- Pagination -->
-                <?php if ($total > $limit): ?>
-                <div class="pagination">
-                    <?php
-                    $totalPages = ceil($total / $limit);
-                    $currentPage = $page;
-                    $range = 2;
-                    
-                    // Previous button
-                    if ($currentPage > 1) {
-                        echo '<a href="?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '&status=' . $status . '&date_from=' . $date_from . '&date_to=' . $date_to . '&sort=' . $sort . '" class="page-link">';
-                        echo '<i class="fas fa-chevron-left"></i>';
-                        echo '</a>';
-                    }
-                    
-                    // Page numbers
-                    for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++) {
-                        $active = $i === $currentPage ? 'active' : '';
-                        echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '&status=' . $status . '&date_from=' . $date_from . '&date_to=' . $date_to . '&sort=' . $sort . '" class="page-link ' . $active . '">' . $i . '</a>';
-                    }
-                    
-                    // Next button
-                    if ($currentPage < $totalPages) {
-                        echo '<a href="?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '&status=' . $status . '&date_from=' . $date_from . '&date_to=' . $date_to . '&sort=' . $sort . '" class="page-link">';
-                        echo '<i class="fas fa-chevron-right"></i>';
-                        echo '</a>';
-                    }
-                    ?>
-                </div>
-                <?php endif; ?>
             </div>
         </main>
     </div>
     
     <script src="../Assets/js/admin.js"></script>
+    <script>
+    // Responsive sidebar giống index.php
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    menuToggle && menuToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+    });
+    // Đóng sidebar khi click ra ngoài (mobile)
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        }
+    });
+    </script>
 </body>
 </html> 

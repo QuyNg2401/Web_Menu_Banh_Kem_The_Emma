@@ -75,8 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1><?php echo SITE_NAME; ?></h1>
-                <p>Admin Panel</p>
+                <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
+                <div style="display:inline-block;vertical-align:middle;">
+                    <h1 style="margin:0;"><?php echo SITE_NAME; ?></h1>
+                    <p style="margin:0;">Admin Panel</p>
+                </div>
             </div>
             
             <nav class="sidebar-nav">
@@ -130,199 +133,198 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <!-- Main Content -->
         <main class="main-content">
-            <header class="main-header">
-                <div class="header-left">
-                    <button class="menu-toggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h2>Chi tiết đơn hàng #<?php echo $order['order_code']; ?></h2>
-                </div>
-                
-                <div class="header-right">
-                    <div class="user-menu">
-                        <img src="<?php echo $user['avatar'] ?? '../Assets/images/default-avatar.png'; ?>" alt="Avatar">
-                        <span><?php echo $user['name']; ?></span>
+            <div class="content-inner">
+                <header class="main-header">
+                    <div class="header-left">
+                        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                        <h2>Chi tiết đơn hàng #<?php echo $order['order_code']; ?></h2>
                     </div>
-                </div>
-            </header>
-            
-            <div class="content-wrapper">
-                <?php if ($success): ?>
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    Cập nhật trạng thái đơn hàng thành công!
-                </div>
-                <?php endif; ?>
-                
-                <?php if ($error): ?>
-                <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <?php echo $error; ?>
-                </div>
-                <?php endif; ?>
-                
-                <div class="order-detail">
-                    <div class="detail-grid">
-                        <!-- Thông tin đơn hàng -->
-                        <div class="detail-section">
-                            <h3>Thông tin đơn hàng</h3>
-                            <div class="info-grid">
-                                <div class="info-item">
-                                    <label>Mã đơn hàng:</label>
-                                    <span>#<?php echo $order['order_code']; ?></span>
-                                </div>
-                                
-                                <div class="info-item">
-                                    <label>Ngày đặt:</label>
-                                    <span><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></span>
-                                </div>
-                                
-                                <div class="info-item">
-                                    <label>Trạng thái:</label>
-                                    <span class="status-badge <?php echo $order['status']; ?>">
-                                        <?php echo ORDER_STATUS[$order['status']]; ?>
-                                    </span>
-                                </div>
-                                
-                                <div class="info-item">
-                                    <label>Phương thức thanh toán:</label>
-                                    <span>
-                                        <i class="fas fa-credit-card"></i>
-                                        <?php echo PAYMENT_METHODS[$order['payment_method']] ?? $order['payment_method']; ?>
-                                    </span>
-                                </div>
-                                
-                                <div class="info-item">
-                                    <label>Tổng tiền:</label>
-                                    <span class="total-amount"><?php echo number_format($order['total_amount']); ?> VNĐ</span>
-                                </div>
-                                
-                                <?php if ($order['notes']): ?>
-                                <div class="info-item full-width">
-                                    <label>Ghi chú:</label>
-                                    <span><?php echo nl2br(htmlspecialchars($order['notes'])); ?></span>
-                                </div>
-                                <?php endif; ?>
-                            </div>
+                    
+                    <div class="header-right">
+                        <div class="user-menu">
+                            <span><?php echo $user['name']; ?></span>
                         </div>
-                        
-                        <!-- Thông tin khách hàng -->
-                        <div class="detail-section">
-                            <h3>Thông tin khách hàng</h3>
-                            <div class="info-grid">
-                                <div class="info-item">
-                                    <label>Họ tên:</label>
-                                    <span><?php echo htmlspecialchars($order['customer_name']); ?></span>
-                                </div>
-                                
-                                <div class="info-item">
-                                    <label>Số điện thoại:</label>
-                                    <span><?php echo $order['customer_phone']; ?></span>
-                                </div>
-                                
-                                <?php if ($order['customer_email']): ?>
-                                <div class="info-item">
-                                    <label>Email:</label>
-                                    <span><?php echo $order['customer_email']; ?></span>
-                                </div>
-                                <?php endif; ?>
-                                
-                                <div class="info-item full-width">
-                                    <label>Địa chỉ:</label>
-                                    <span><?php echo nl2br(htmlspecialchars($order['shipping_address'])); ?></span>
+                    </div>
+                </header>
+                
+                <div class="content-wrapper">
+                    <?php if ($success): ?>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        Cập nhật trạng thái đơn hàng thành công!
+                    </div>
+                    <?php endif; ?>
+                    
+                    <?php if ($error): ?>
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <?php echo $error; ?>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <div class="order-detail">
+                        <div class="detail-grid">
+                            <!-- Thông tin đơn hàng -->
+                            <div class="detail-section">
+                                <h3>Thông tin đơn hàng</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>Mã đơn hàng:</label>
+                                        <span>#<?php echo $order['order_code']; ?></span>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label>Ngày đặt:</label>
+                                        <span><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></span>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label>Trạng thái:</label>
+                                        <span class="status-badge <?php echo $order['status']; ?>">
+                                            <?php echo ORDER_STATUS[$order['status']]; ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label>Phương thức thanh toán:</label>
+                                        <span>
+                                            <i class="fas fa-credit-card"></i>
+                                            <?php echo PAYMENT_METHODS[$order['payment_method']] ?? $order['payment_method']; ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label>Tổng tiền:</label>
+                                        <span class="total-amount"><?php echo number_format($order['total_amount']); ?> VNĐ</span>
+                                    </div>
+                                    
+                                    <?php if ($order['notes']): ?>
+                                    <div class="info-item full-width">
+                                        <label>Ghi chú:</label>
+                                        <span><?php echo nl2br(htmlspecialchars($order['notes'])); ?></span>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Danh sách sản phẩm -->
-                        <div class="detail-section full-width">
-                            <h3>Danh sách sản phẩm</h3>
-                            <div class="table-responsive">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Hình ảnh</th>
-                                            <th>Sản phẩm</th>
-                                            <th>Giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Thành tiền</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($items as $item): ?>
-                                        <tr>
-                                            <td>
-                                                <img src="<?php echo $item['image'] ? '../uploads/' . $item['image'] : '../Assets/images/no-image.png'; ?>" 
-                                                     alt="<?php echo htmlspecialchars($item['name']); ?>"
-                                                     class="product-thumbnail">
-                                            </td>
-                                            <td>
-                                                <div class="product-name">
-                                                    <?php echo htmlspecialchars($item['name']); ?>
-                                                    <?php if ($item['notes']): ?>
-                                                    <div class="product-notes">
-                                                        <i class="fas fa-info-circle"></i>
-                                                        <?php echo htmlspecialchars($item['notes']); ?>
+                            
+                            <!-- Thông tin khách hàng -->
+                            <div class="detail-section">
+                                <h3>Thông tin khách hàng</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>Họ tên:</label>
+                                        <span><?php echo htmlspecialchars($order['customer_name']); ?></span>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <label>Số điện thoại:</label>
+                                        <span><?php echo $order['customer_phone']; ?></span>
+                                    </div>
+                                    
+                                    <?php if ($order['customer_email']): ?>
+                                    <div class="info-item">
+                                        <label>Email:</label>
+                                        <span><?php echo $order['customer_email']; ?></span>
+                                    </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="info-item full-width">
+                                        <label>Địa chỉ:</label>
+                                        <span><?php echo nl2br(htmlspecialchars($order['shipping_address'])); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Danh sách sản phẩm -->
+                            <div class="detail-section full-width">
+                                <h3>Danh sách sản phẩm</h3>
+                                <div class="table-responsive">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Hình ảnh</th>
+                                                <th>Sản phẩm</th>
+                                                <th>Giá</th>
+                                                <th>Số lượng</th>
+                                                <th>Thành tiền</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($items as $item): ?>
+                                            <tr>
+                                                <td>
+                                                    <img src="<?php echo $item['image'] ? '../uploads/' . $item['image'] : '../Assets/images/no-image.png'; ?>" 
+                                                         alt="<?php echo htmlspecialchars($item['name']); ?>"
+                                                         class="product-thumbnail">
+                                                </td>
+                                                <td>
+                                                    <div class="product-name">
+                                                        <?php echo htmlspecialchars($item['name']); ?>
+                                                        <?php if ($item['notes']): ?>
+                                                        <div class="product-notes">
+                                                            <i class="fas fa-info-circle"></i>
+                                                            <?php echo htmlspecialchars($item['notes']); ?>
+                                                        </div>
+                                                        <?php endif; ?>
                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <?php if ($item['price'] < $item['original_price']): ?>
+                                                    <div class="price-sale">
+                                                        <span class="original-price"><?php echo number_format($item['original_price']); ?> VNĐ</span>
+                                                        <span class="sale-price"><?php echo number_format($item['price']); ?> VNĐ</span>
+                                                    </div>
+                                                    <?php else: ?>
+                                                    <span class="price"><?php echo number_format($item['price']); ?> VNĐ</span>
                                                     <?php endif; ?>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <?php if ($item['price'] < $item['original_price']): ?>
-                                                <div class="price-sale">
-                                                    <span class="original-price"><?php echo number_format($item['original_price']); ?> VNĐ</span>
-                                                    <span class="sale-price"><?php echo number_format($item['price']); ?> VNĐ</span>
-                                                </div>
-                                                <?php else: ?>
-                                                <span class="price"><?php echo number_format($item['price']); ?> VNĐ</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><?php echo $item['quantity']; ?></td>
-                                            <td class="subtotal"><?php echo number_format($item['price'] * $item['quantity']); ?> VNĐ</td>
-                                        </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="4" class="text-right">Tổng tiền:</td>
-                                            <td class="total"><?php echo number_format($order['total_amount']); ?> VNĐ</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                                </td>
+                                                <td><?php echo $item['quantity']; ?></td>
+                                                <td class="subtotal"><?php echo number_format($item['price'] * $item['quantity']); ?> VNĐ</td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="4" class="text-right">Tổng tiền:</td>
+                                                <td class="total"><?php echo number_format($order['total_amount']); ?> VNĐ</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Cập nhật trạng thái -->
-                        <div class="detail-section full-width">
-                            <h3>Cập nhật trạng thái</h3>
-                            <form action="" method="POST" class="status-form">
-                                <div class="form-group">
-                                    <label for="status">Trạng thái:</label>
-                                    <select id="status" name="status" required>
-                                        <?php foreach (ORDER_STATUS as $key => $value): ?>
-                                        <option value="<?php echo $key; ?>" <?php echo $order['status'] === $key ? 'selected' : ''; ?>>
-                                            <?php echo $value; ?>
-                                        </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="notes">Ghi chú:</label>
-                                    <textarea id="notes" name="notes" rows="3"><?php echo htmlspecialchars($order['notes'] ?? ''); ?></textarea>
-                                </div>
-                                
-                                <div class="form-actions">
-                                    <a href="orders.php" class="btn-cancel">
-                                        <i class="fas fa-arrow-left"></i>
-                                        Quay lại
-                                    </a>
-                                    <button type="submit" class="btn-submit">
-                                        <i class="fas fa-save"></i>
-                                        Cập nhật
-                                    </button>
-                                </div>
-                            </form>
+                            
+                            <!-- Cập nhật trạng thái -->
+                            <div class="detail-section full-width">
+                                <h3>Cập nhật trạng thái</h3>
+                                <form action="" method="POST" class="status-form">
+                                    <div class="form-group">
+                                        <label for="status">Trạng thái:</label>
+                                        <select id="status" name="status" required>
+                                            <?php foreach (ORDER_STATUS as $key => $value): ?>
+                                            <option value="<?php echo $key; ?>" <?php echo $order['status'] === $key ? 'selected' : ''; ?>>
+                                                <?php echo $value; ?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="notes">Ghi chú:</label>
+                                        <textarea id="notes" name="notes" rows="3"><?php echo htmlspecialchars($order['notes'] ?? ''); ?></textarea>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <a href="orders.php" class="btn-cancel">
+                                            <i class="fas fa-arrow-left"></i>
+                                            Quay lại
+                                        </a>
+                                        <button type="submit" class="btn-submit">
+                                            <i class="fas fa-save"></i>
+                                            Cập nhật
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
