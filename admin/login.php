@@ -25,25 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
             
             if ($user && password_verify($password, $user['password'])) {
-                if ($user['status'] === 'active') {
-                    // Tạo token
-                    $token = bin2hex(random_bytes(32));
-                    $expires = date('Y-m-d H:i:s', strtotime('+1 day'));
-                    
-                    $db->insert(
-                        "INSERT INTO user_tokens (user_id, token, expires_at) VALUES (?, ?, ?)",
-                        [$user['id'], $token, $expires]
-                    );
-                    
-                    // Lưu token vào session
-                    $_SESSION['token'] = $token;
-                    $_SESSION['user_id'] = $user['id'];
-                    
-                    header('Location: index.php');
-                    exit;
-                } else {
-                    $error = 'Tài khoản của bạn đã bị khóa';
-                }
+                // Tạo token
+                $token = bin2hex(random_bytes(32));
+                $expires = date('Y-m-d H:i:s', strtotime('+1 day'));
+                
+                $db->insert(
+                    "INSERT INTO user_tokens (user_id, token, expires_at) VALUES (?, ?, ?)",
+                    [$user['id'], $token, $expires]
+                );
+                
+                // Lưu token vào session
+                $_SESSION['token'] = $token;
+                $_SESSION['user_id'] = $user['id'];
+                
+                header('Location: index.php');
+                exit;
             } else {
                 $error = 'Email hoặc mật khẩu không đúng';
             }

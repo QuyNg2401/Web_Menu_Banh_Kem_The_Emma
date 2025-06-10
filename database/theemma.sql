@@ -32,23 +32,18 @@ CREATE TABLE `users` (
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `address` text DEFAULT NULL,
-  `avatar` varchar(255) DEFAULT NULL,
-  `role` enum('admin','customer') DEFAULT 'customer',
-  `status` enum('active','inactive') DEFAULT 'active',
+  `role` enum('admin','user') DEFAULT 'user',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `address`, `avatar`, `role`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin@theemma.com', '$2y$10$JW3kZlnK8MushDeG.MkHSuk29kKfDLtnkKPR1tQvX7Z4Wic2MlX9a', '0123456789', '123 Đường ABC, Quận XYZ, TP.HCM', NULL, 'admin', 'active', '2025-06-06 04:22:22', '2025-06-06 04:32:38');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`) VALUES
+(1, 'Admin', 'admin@theemma.com', '$2y$10$JW3kZlnK8MushDeG.MkHSuk29kKfDLtnkKPR1tQvX7Z4Wic2MlX9a', 'admin', '2025-06-06 04:22:22');
 
 -- --------------------------------------------------------
 
@@ -182,6 +177,20 @@ INSERT INTO `product_sizes` (`product_id`, `size`, `price`) VALUES
 (3, '16cm', 340000),
 (3, '18cm', 390000),
 (3, '20cm', 440000);
+
+-- --------------------------------------------------------
+
+-- Cấu trúc bảng cho bảng `inventory_in`
+
+CREATE TABLE `inventory_in` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `item_name` VARCHAR(100) NOT NULL,
+    `quantity` DECIMAL(10,2) NOT NULL,
+    `notes` TEXT,
+    `created_by` INT,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;
 

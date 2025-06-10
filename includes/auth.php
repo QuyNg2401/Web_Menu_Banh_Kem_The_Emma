@@ -35,7 +35,7 @@ function checkAuth() {
         
         // Lấy thông tin user
         $user = $db->selectOne(
-            "SELECT * FROM users WHERE id = ? AND role = 'admin' AND status = 'active'",
+            "SELECT * FROM users WHERE id = ? AND role = 'admin'",
             [$_SESSION['user_id']]
         );
         

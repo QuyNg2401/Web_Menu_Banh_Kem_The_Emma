@@ -1,66 +1,38 @@
-cake-shop/
-├── assets/                     # Tài nguyên tĩnh
+theemma/
+├── Assets/                     # Tài nguyên tĩnh
 │   ├── css/
-│   │   ├── style.css           # CSS cho giao diện khách hàng
-│   │   ├── admin.css           # CSS cho giao diện admin/nhân viên
-│   │   ├── responsive.css      # CSS cho giao diện responsive
-│   ├── js/
-│   │   ├── main.js             # JS cho khách hàng (giỏ hàng, menu)
-│   │   ├── admin.js            # JS cho admin/nhân viên (quản lý)
-│   │   └── utils.js            # Hàm tiện ích (AJAX, validate form)
+│   │   ├── style.css           # CSS cho giao diện chính
+│   │   └── reponsive.css       # CSS cho giao diện responsive
 │   ├── images/
 │   │   ├── products/           # Hình ảnh sản phẩm
 │   │   ├── logo.png            # Logo website
 │   │   ├── banners/            # Hình ảnh banner
+│   │   ├── vin_style/          # Hình ảnh trang trí
+│   │   ├── icon.png            # Icon website
+│   │   ├── favicon-32x32.png   # Favicon 32x32
+│   │   ├── favicon-16x16.png   # Favicon 16x16
+│   │   ├── apple-touch-icon.png # Icon cho iOS
+│   │   └── bocongthuong.png    # Logo bộ công thương
 │
-├── includes/                   # File dùng chung
-│   ├── config.php              # Cấu hình kết nối database
-│   ├── db.php                  # Hàm truy vấn chung
-│   ├── auth.php                # Kiểm tra đăng nhập/phân quyền
-│   ├── functions.php           # Hàm tiện ích (upload file, format giá)
+├── admin/                      # Phần quản trị
+│   ├── index.php              # Trang chủ admin
+│   ├── login.php              # Đăng nhập admin
+│   └── dashboard.php          # Bảng điều khiển
 │
-├── models/                     # Model (xử lý dữ liệu)
-│   ├── UserModel.php           # Quản lý tài khoản (admin, nhân viên)
-│   ├── ProductModel.php        # Quản lý sản phẩm
-│   ├── InventoryModel.php      # Quản lý kho
-│   ├── OrderModel.php          # Quản lý hóa đơn/đơn hàng
-│   ├── CourseModel.php         # Quản lý lớp học
-│   ├── StudentModel.php        # Quản lý học viên
+├── api/                       # API endpoints
+│   └── placeholder/           # API placeholder cho hình ảnh
 │
-├── controllers/                # Controller (xử lý logic)
-│   ├── AuthController.php      # Đăng nhập, đăng xuất
-│   ├── UserController.php      # Quản lý nhân viên, tài khoản
-│   ├── ProductController.php   # Quản lý sản phẩm, bán hàng
-│   ├── InventoryController.php # Quản lý kho
-│   ├── OrderController.php     # Quản lý hóa đơn/đơn hàng
-│   ├── CourseController.php    # Quản lý lớp học
-│   ├── StudentController.php   # Quản lý học viên
+├── database/                  # Cơ sở dữ liệu
+│   └── theemma.sql           # File SQL
 │
-├── views/                      # View (giao diện)
-│   ├── layouts/
-│   │   ├── header.php          # Header cho khách hàng
-│   │   ├── footer.php          # Footer cho khách hàng
-│   │   ├── admin_header.php    # Header cho admin/nhân viên
-│   │   ├── admin_footer.php    # Footer cho admin/nhân viên
-│   ├── client/
-│   │   ├── shop.php            # Trang hiển thị menu bánh kem
-│   │   ├── cart.php            # Giỏ hàng
-│   │   ├── checkout.php        # Thanh toán
-│   │   ├── login.php           # Đăng nhập khách hàng
-│   ├── admin/
-│   │   ├── index.php           # Dashboard admin/nhân viên
-│   │   ├── login.php           # Đăng nhập admin/nhân viên
-│   │   ├── employees.php       # Quản lý nhân viên
-│   │   ├── accounts.php        # Quản lý tài khoản
-│   │   ├── inventory.php       # Quản lý kho
-│   │   ├── courses.php         # Quản lý lớp học
-│   │   ├── students.php        # Quản lý học viên
-│   │   ├── products.php        # Quản lý sản phẩm
-│   │   ├── orders.php          # Quản lý hóa đơn
+├── includes/                  # File dùng chung
+│   └── config.php            # Cấu hình kết nối database
 │
-├── uploads/                    # Hình ảnh upload (sản phẩm, lớp học)
+├── uploads/                   # Thư mục upload hình ảnh
 │
-├── .htaccess                   # Cấu hình URL thân thiện
-├── index.php                   # Router (điểm vào)
-├── .gitignore                  # Bỏ qua file nhạy cảm
-└── README.md                   # Mô tả dự án
+├── index.html                 # Trang chủ
+├── menu.html                  # Trang menu bánh
+├── about.html                 # Trang giới thiệu
+├── contact.html               # Trang liên hệ
+├── mota.txt                   # Mô tả cấu trúc dự án
+└── README.md                  # Hướng dẫn sử dụng

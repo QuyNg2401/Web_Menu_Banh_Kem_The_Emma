@@ -11,7 +11,7 @@ $user = getCurrentUser();
 // Xử lý tìm kiếm và lọc
 $search = $_GET['search'] ?? '';
 $role = $_GET['role'] ?? '';
-$status = $_GET['status'] ?? '';
+$status = '';
 $sort = $_GET['sort'] ?? 'created_at_desc';
 $page = max(1, intval($_GET['page'] ?? 1));
 $limit = 10;
@@ -32,11 +32,6 @@ if ($search) {
 if ($role) {
     $where .= " AND role = ?";
     $params[] = $role;
-}
-
-if ($status) {
-    $where .= " AND status = ?";
-    $params[] = $status;
 }
 
 // Xử lý sắp xếp
@@ -77,6 +72,20 @@ $total = $db->selectOne(
     <title>Quản lý người dùng - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../Assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .role-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: #fff;
+            border-radius: 16px;
+            padding: 4px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            line-height: 1.5;
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -172,14 +181,6 @@ $total = $db->selectOne(
                             </div>
                             
                             <div class="form-group">
-                                <select name="status">
-                                    <option value="">Tất cả trạng thái</option>
-                                    <option value="active" <?php echo $status === 'active' ? 'selected' : ''; ?>>Đang hoạt động</option>
-                                    <option value="inactive" <?php echo $status === 'inactive' ? 'selected' : ''; ?>>Đã khóa</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
                                 <select name="sort">
                                     <option value="created_at_desc" <?php echo $sort === 'created_at_desc' ? 'selected' : ''; ?>>Mới nhất</option>
                                     <option value="created_at_asc" <?php echo $sort === 'created_at_asc' ? 'selected' : ''; ?>>Cũ nhất</option>
@@ -210,7 +211,6 @@ $total = $db->selectOne(
                                     <th>ID</th>
                                     <th>Thông tin</th>
                                     <th>Vai trò</th>
-                                    <th>Trạng thái</th>
                                     <th>Đơn hàng</th>
                                     <th>Tổng chi tiêu</th>
                                     <th>Ngày tạo</th>
@@ -223,14 +223,14 @@ $total = $db->selectOne(
                                     <td><?php echo $u['id']; ?></td>
                                     <td>
                                         <div class="user-info">
-                                            <img src="<?php echo $u['avatar'] ? '../uploads/' . $u['avatar'] : '../Assets/images/default-avatar.png'; ?>" 
+                                            <img src="<?php echo !empty($u['avatar']) ? '../uploads/' . $u['avatar'] : '../Assets/images/default-avatar.png'; ?>" 
                                                  alt="<?php echo htmlspecialchars($u['name']); ?>"
                                                  class="user-avatar">
                                             <div class="user-details">
                                                 <div class="user-name"><?php echo htmlspecialchars($u['name']); ?></div>
                                                 <div class="user-contact">
                                                     <span><i class="fas fa-envelope"></i> <?php echo $u['email']; ?></span>
-                                                    <?php if ($u['phone']): ?>
+                                                    <?php if (!empty($u['phone'])): ?>
                                                     <span><i class="fas fa-phone"></i> <?php echo $u['phone']; ?></span>
                                                     <?php endif; ?>
                                                 </div>
@@ -241,12 +241,6 @@ $total = $db->selectOne(
                                         <span class="role-badge <?php echo $u['role']; ?>">
                                             <?php echo $u['role'] === 'admin' ? 'Quản trị viên' : 'Khách hàng'; ?>
                                         </span>
-                                    </td>
-                                    <td>
-                                        <select class="status-select" data-id="<?php echo $u['id']; ?>" data-type="users" data-original-status="<?php echo $u['status']; ?>">
-                                            <option value="active" <?php echo $u['status'] === 'active' ? 'selected' : ''; ?>>Đang hoạt động</option>
-                                            <option value="inactive" <?php echo $u['status'] === 'inactive' ? 'selected' : ''; ?>>Đã khóa</option>
-                                        </select>
                                     </td>
                                     <td>
                                         <a href="orders.php?user_id=<?php echo $u['id']; ?>" class="order-count">
@@ -289,7 +283,7 @@ $total = $db->selectOne(
                         
                         // Previous button
                         if ($currentPage > 1) {
-                            echo '<a href="?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link">';
+                            echo '<a href="?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '&role=' . $role . '&sort=' . $sort . '" class="page-link">';
                             echo '<i class="fas fa-chevron-left"></i>';
                             echo '</a>';
                         }
@@ -297,12 +291,12 @@ $total = $db->selectOne(
                         // Page numbers
                         for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++) {
                             $active = $i === $currentPage ? 'active' : '';
-                            echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link ' . $active . '">' . $i . '</a>';
+                            echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '&role=' . $role . '&sort=' . $sort . '" class="page-link ' . $active . '">' . $i . '</a>';
                         }
                         
                         // Next button
                         if ($currentPage < $totalPages) {
-                            echo '<a href="?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '&role=' . $role . '&status=' . $status . '&sort=' . $sort . '" class="page-link">';
+                            echo '<a href="?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '&role=' . $role . '&sort=' . $sort . '" class="page-link">';
                             echo '<i class="fas fa-chevron-right"></i>';
                             echo '</a>';
                         }
