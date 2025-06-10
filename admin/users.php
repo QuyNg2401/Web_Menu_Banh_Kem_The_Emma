@@ -10,9 +10,7 @@ $user = getCurrentUser();
 
 // Xử lý tìm kiếm và lọc
 $search = $_GET['search'] ?? '';
-$role = $_GET['role'] ?? '';
 $status = '';
-$sort = $_GET['sort'] ?? 'created_at_desc';
 $page = max(1, intval($_GET['page'] ?? 1));
 $limit = 10;
 $offset = ($page - 1) * $limit;
@@ -29,20 +27,8 @@ if ($search) {
     $params[] = $searchTerm;
 }
 
-if ($role) {
-    $where .= " AND role = ?";
-    $params[] = $role;
-}
-
-// Xử lý sắp xếp
-$orderBy = match($sort) {
-    'name_asc' => 'ORDER BY name ASC',
-    'name_desc' => 'ORDER BY name DESC',
-    'email_asc' => 'ORDER BY email ASC',
-    'email_desc' => 'ORDER BY email DESC',
-    'created_at_asc' => 'ORDER BY created_at ASC',
-    default => 'ORDER BY created_at DESC'
-};
+// Đã xóa xử lý sắp xếp
+$orderBy = 'ORDER BY created_at DESC';
 
 // Lấy danh sách người dùng
 $users = $db->select(
@@ -87,7 +73,7 @@ $total = $db->selectOne(
         }
     </style>
 </head>
-<body>
+<body class="users-page">
     <div class="admin-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -166,54 +152,23 @@ $total = $db->selectOne(
                 
                 <div class="content-wrapper">
                     <!-- Filters -->
-                    <div class="filters">
-                        <form action="" method="GET" class="filter-form">
-                            <div class="form-group">
+                    <div class="filters-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; margin-bottom: 18px;">
+                        <form action="" method="GET" class="filter-form" style="flex:1; min-width:220px;">
+                            <div class="form-group" style="margin-bottom:0;">
                                 <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm người dùng...">
                             </div>
-                            
-                            <div class="form-group">
-                                <select name="role">
-                                    <option value="">Tất cả vai trò</option>
-                                    <option value="admin" <?php echo $role === 'admin' ? 'selected' : ''; ?>>Quản trị viên</option>
-                                    <option value="customer" <?php echo $role === 'customer' ? 'selected' : ''; ?>>Khách hàng</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <select name="sort">
-                                    <option value="created_at_desc" <?php echo $sort === 'created_at_desc' ? 'selected' : ''; ?>>Mới nhất</option>
-                                    <option value="created_at_asc" <?php echo $sort === 'created_at_asc' ? 'selected' : ''; ?>>Cũ nhất</option>
-                                    <option value="name_asc" <?php echo $sort === 'name_asc' ? 'selected' : ''; ?>>Tên A-Z</option>
-                                    <option value="name_desc" <?php echo $sort === 'name_desc' ? 'selected' : ''; ?>>Tên Z-A</option>
-                                    <option value="email_asc" <?php echo $sort === 'email_asc' ? 'selected' : ''; ?>>Email A-Z</option>
-                                    <option value="email_desc" <?php echo $sort === 'email_desc' ? 'selected' : ''; ?>>Email Z-A</option>
-                                </select>
-                            </div>
-                            
-                            <button type="submit" class="btn-filter">
-                                <i class="fas fa-filter"></i>
-                                Lọc
-                            </button>
                         </form>
-                        
-                        <a href="user-form.php" class="btn-add">
-                            <i class="fas fa-plus"></i>
-                            Thêm người dùng
-                        </a>
+                        <a href="user-form.php" class="btn-add" style="white-space:nowrap;"> <i class="fas fa-plus"></i> Thêm người dùng </a>
                     </div>
                     
                     <!-- Users Table -->
                     <div class="table-responsive">
-                        <table>
+                        <table class="custom-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Thông tin</th>
                                     <th>Vai trò</th>
-                                    <th>Đơn hàng</th>
-                                    <th>Tổng chi tiêu</th>
-                                    <th>Ngày tạo</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -223,9 +178,6 @@ $total = $db->selectOne(
                                     <td><?php echo $u['id']; ?></td>
                                     <td>
                                         <div class="user-info">
-                                            <img src="<?php echo !empty($u['avatar']) ? '../uploads/' . $u['avatar'] : '../Assets/images/default-avatar.png'; ?>" 
-                                                 alt="<?php echo htmlspecialchars($u['name']); ?>"
-                                                 class="user-avatar">
                                             <div class="user-details">
                                                 <div class="user-name"><?php echo htmlspecialchars($u['name']); ?></div>
                                                 <div class="user-contact">
@@ -239,22 +191,9 @@ $total = $db->selectOne(
                                     </td>
                                     <td>
                                         <span class="role-badge <?php echo $u['role']; ?>">
-                                            <?php echo $u['role'] === 'admin' ? 'Quản trị viên' : 'Khách hàng'; ?>
+                                            <?php echo $u['role'] === 'admin' ? 'Quản trị viên' : 'Nhân viên'; ?>
                                         </span>
                                     </td>
-                                    <td>
-                                        <a href="orders.php?user_id=<?php echo $u['id']; ?>" class="order-count">
-                                            <?php echo $u['total_orders']; ?> đơn
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <?php if ($u['total_spent']): ?>
-                                        <span class="total-spent"><?php echo number_format($u['total_spent']); ?> VNĐ</span>
-                                        <?php else: ?>
-                                        <span class="no-spent">Chưa có</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?php echo date('d/m/Y H:i', strtotime($u['created_at'])); ?></td>
                                     <td>
                                         <div class="action-buttons">
                                             <a href="user-form.php?id=<?php echo $u['id']; ?>" class="btn-edit" title="Sửa">
@@ -283,7 +222,7 @@ $total = $db->selectOne(
                         
                         // Previous button
                         if ($currentPage > 1) {
-                            echo '<a href="?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '&role=' . $role . '&sort=' . $sort . '" class="page-link">';
+                            echo '<a href="?page=' . ($currentPage - 1) . '&search=' . urlencode($search) . '" class="page-link">';
                             echo '<i class="fas fa-chevron-left"></i>';
                             echo '</a>';
                         }
@@ -291,12 +230,12 @@ $total = $db->selectOne(
                         // Page numbers
                         for ($i = max(1, $currentPage - $range); $i <= min($totalPages, $currentPage + $range); $i++) {
                             $active = $i === $currentPage ? 'active' : '';
-                            echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '&role=' . $role . '&sort=' . $sort . '" class="page-link ' . $active . '">' . $i . '</a>';
+                            echo '<a href="?page=' . $i . '&search=' . urlencode($search) . '" class="page-link ' . $active . '">' . $i . '</a>';
                         }
                         
                         // Next button
                         if ($currentPage < $totalPages) {
-                            echo '<a href="?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '&role=' . $role . '&sort=' . $sort . '" class="page-link">';
+                            echo '<a href="?page=' . ($currentPage + 1) . '&search=' . urlencode($search) . '" class="page-link">';
                             echo '<i class="fas fa-chevron-right"></i>';
                             echo '</a>';
                         }
@@ -309,5 +248,20 @@ $total = $db->selectOne(
     </div>
     
     <script src="../Assets/js/admin.js"></script>
+    <script>
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    menuToggle && menuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sidebar.classList.toggle('active');
+    });
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1080 && sidebar.classList.contains('active')) {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        }
+    });
+    </script>
 </body>
 </html> 

@@ -77,7 +77,7 @@ $categories = $db->select("SELECT * FROM categories ORDER BY name ASC");
     <link rel="stylesheet" href="../Assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="products-page">
     <div class="admin-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -198,7 +198,7 @@ $categories = $db->select("SELECT * FROM categories ORDER BY name ASC");
                     
                     <!-- Products Table -->
                     <div class="table-responsive">
-                        <table>
+                        <table class="custom-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -207,7 +207,6 @@ $categories = $db->select("SELECT * FROM categories ORDER BY name ASC");
                                     <th>Danh mục</th>
                                     <th>Kích thước</th>
                                     <th>Giá</th>
-                                    <th>Ngày tạo</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -244,7 +243,6 @@ $categories = $db->select("SELECT * FROM categories ORDER BY name ASC");
                                             <span style="color:#aaa;">Chưa có</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo date('d/m/Y H:i', strtotime($product['created_at'])); ?></td>
                                     <td>
                                         <div class="action-buttons">
                                             <a href="product-form.php?id=<?php echo $product['id']; ?>" class="btn-edit" title="Sửa">
