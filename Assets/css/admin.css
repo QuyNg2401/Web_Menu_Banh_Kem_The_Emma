@@ -772,7 +772,6 @@ th {
     
     .user-info {
         flex-direction: column;
-        text-align: center;
     }
     
     .user-contact span {
@@ -937,7 +936,6 @@ th {
     font-weight: 600;
     color: #fff;
     background: #888;
-    min-width: 80px;
     text-align: center;
 }
 .status-inshop, .status-completed, .status-active {
@@ -958,13 +956,13 @@ a,
 
 .menu-toggle {
     display: none;
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    color: var(--primary-color) !important;
-    padding: 8px !important;
-    font-size: 2rem !important;
+    background: none;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    color: var(--primary-color);
+    padding: 8px;
+    font-size: 2rem;
     border-radius: 8px;
     transition: background 0.2s, color 0.2s;
     cursor: pointer;
@@ -1068,7 +1066,6 @@ a,
         flex: 1 1 38%;
         margin-top: 0 !important;
         height: 44px;
-        min-width: 120px;
     }
     .filter-form .form-group:not(:first-child) {
         order: 3;
@@ -1233,41 +1230,11 @@ a,
 }
 
 /* CSS cho trang users.php */
-@media (max-width: 960px) and (min-width: 768px) {
+@media (max-width: 960px) {
     .users-page .custom-table {
         width: 100%;
     }
     
-    /* Phân bố độ rộng các cột */
-    .users-page .custom-table th:nth-child(1),
-    .users-page .custom-table td:nth-child(1) {
-        width: 5%; /* ID */
-    }
-    
-    .users-page .custom-table th:nth-child(2),
-    .users-page .custom-table td:nth-child(2) {
-        width: 35%; /* Thông tin */
-    }
-    
-    .users-page .custom-table th:nth-child(3),
-    .users-page .custom-table td:nth-child(3) {
-        width: 15%; /* Vai trò */
-    }
-    
-    .users-page .custom-table th:nth-child(4),
-    .users-page .custom-table td:nth-child(4) {
-        width: 15%; /* Đơn hàng */
-    }
-    
-    .users-page .custom-table th:nth-child(5),
-    .users-page .custom-table td:nth-child(5) {
-        width: 20%; /* Tổng chi tiêu */
-    }
-    
-    .users-page .custom-table th:nth-child(6),
-    .users-page .custom-table td:nth-child(6) {
-        width: 10%; /* Thao tác */
-    }
     
     .users-page .user-info {
         display: flex;
@@ -1310,40 +1277,14 @@ a,
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
-    /* Phân bố lại độ rộng các cột cho màn hình nhỏ */
-    .users-page .custom-table th:nth-child(1),
-    .users-page .custom-table td:nth-child(1) {
-        width: 10%; /* ID */
-    }
-    
-    .users-page .custom-table th:nth-child(2),
-    .users-page .custom-table td:nth-child(2) {
-        width: 40%; /* Thông tin */
-    }
-    
-    .users-page .custom-table th:nth-child(3),
-    .users-page .custom-table td:nth-child(3) {
-        width: 15%; /* Vai trò */
-    }
-    
-    .users-page .custom-table th:nth-child(4),
-    .users-page .custom-table td:nth-child(4) {
-        width: 15%; /* Đơn hàng */
-    }
-    
-    .users-page .custom-table th:nth-child(5),
-    .users-page .custom-table td:nth-child(5) {
-        width: 10%; /* Tổng chi tiêu */
-    }
-    
-    .users-page .custom-table th:nth-child(6),
-    .users-page .custom-table td:nth-child(6) {
-        width: 10%; /* Thao tác */
+    .role-badge.admin {
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-size: 10px;
     }
 }
 
-@media (max-width: 960px) and (min-width: 768px) {
+@media (max-width: 960px) {
     .products-page .custom-table th:nth-child(1),
     .products-page .custom-table td:nth-child(1), /* Ẩn cột ID */
     .products-page .custom-table th:nth-child(2),
@@ -1352,23 +1293,6 @@ a,
     .products-page .custom-table td:nth-child(4)  /* Ẩn cột Danh mục */
     {
         display: none;
-    }
-    /* Phân bố lại width các cột còn lại */
-    .products-page .custom-table th:nth-child(3),
-    .products-page .custom-table td:nth-child(3) {
-        width: 40%; /* Tên sản phẩm */
-    }
-    .products-page .custom-table th:nth-child(5),
-    .products-page .custom-table td:nth-child(5) {
-        width: 20%; /* Kích thước */
-    }
-    .products-page .custom-table th:nth-child(6),
-    .products-page .custom-table td:nth-child(6) {
-        width: 25%; /* Giá */
-    }
-    .products-page .custom-table th:nth-child(7),
-    .products-page .custom-table td:nth-child(7) {
-        width: 15%; /* Thao tác */
     }
 }
 
