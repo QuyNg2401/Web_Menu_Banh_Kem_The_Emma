@@ -118,6 +118,12 @@ $total = $db->selectOne(
                         </a>
                     </li>
                     <li>
+                        <a href="inventory.php">
+                            <i class="fas fa-warehouse"></i>
+                            <span>Quản lý kho</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>

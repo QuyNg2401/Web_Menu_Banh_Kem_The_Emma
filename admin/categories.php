@@ -85,6 +85,7 @@ $user = getCurrentUser();
                 <li><a href="orders.php"><i class="fas fa-shopping-cart"></i><span>Đơn hàng</span></a></li>
                 <li><a href="users.php"><i class="fas fa-users"></i><span>Người dùng</span></a></li>
                 <li class="active"><a href="categories.php"><i class="fas fa-tags"></i><span>Danh mục</span></a></li>
+                <li><a href="inventory.php"><i class="fas fa-warehouse"></i><span>Quản lý kho</span></a></li>
                 <li><a href="settings.php"><i class="fas fa-cog"></i><span>Cài đặt</span></a></li>
             </ul>
         </nav>
@@ -136,7 +137,6 @@ $user = getCurrentUser();
                                 <th>ID</th>
                                 <th>Tên danh mục</th>
                                 <th>Ngày tạo</th>
-                                <th>Ngày cập nhật</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -146,10 +146,11 @@ $user = getCurrentUser();
                                 <td><?php echo $cat['id']; ?></td>
                                 <td><?php echo htmlspecialchars($cat['name']); ?></td>
                                 <td><?php echo date('d/m/Y H:i', strtotime($cat['created_at'])); ?></td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($cat['updated_at'])); ?></td>
                                 <td>
-                                    <a href="categories.php?action=edit&id=<?php echo $cat['id']; ?>" class="btn-edit" title="Sửa"><i class="fas fa-edit"></i></a>
-                                    <a href="categories.php?action=delete&id=<?php echo $cat['id']; ?>" class="btn-delete" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa?');"><i class="fas fa-trash"></i></a>
+                                    <div class="action-buttons">
+                                        <a href="categories.php?action=edit&id=<?php echo $cat['id']; ?>" class="btn-edit" title="Sửa"><i class="fas fa-edit"></i></a>
+                                        <a href="categories.php?action=delete&id=<?php echo $cat['id']; ?>" class="btn-delete" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa?');"><i class="fas fa-trash"></i></a>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

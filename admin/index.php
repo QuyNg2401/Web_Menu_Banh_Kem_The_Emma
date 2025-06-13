@@ -191,12 +191,12 @@ $topProducts = $db->select(
                                         <th>Khách hàng</th>
                                         <th>Tổng tiền</th>
                                         <th>Trạng thái</th>
-                                        <th>Ngày đặt</th>
                                         <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($latestOrders as $order): ?>
+                                    <?php if ($order['status'] === 'completed') continue; ?>
                                     <tr>
                                         <td>#<?php echo $order['id']; ?></td>
                                         <td><?php echo $order['customer_name']; ?></td>
@@ -206,7 +206,6 @@ $topProducts = $db->select(
                                                 <?php echo ORDER_STATUS[$order['status']]; ?>
                                             </span>
                                         </td>
-                                        <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
                                         <td>
                                             <a href="order-detail.php?id=<?php echo $order['id']; ?>" class="btn-view">
                                                 <i class="fas fa-eye"></i>

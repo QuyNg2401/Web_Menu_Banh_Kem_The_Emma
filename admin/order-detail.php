@@ -50,10 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Vui lòng chọn trạng thái đơn hàng';
     } else {
         // Cập nhật trạng thái
-        $db->update('orders', [
-            'status' => $status,
-            'notes' => $notes
-        ], ['id' => $id]);
+        $db->update("UPDATE orders SET status = ?, notes = ? WHERE id = ?", [$status, $notes, $id]);
         
         $success = true;
         $order['status'] = $status;
@@ -260,7 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <td>
                                                     <div class="product-name">
                                                         <?php echo htmlspecialchars($item['name']); ?>
-                                                        <?php if ($item['notes']): ?>
+                                                        <?php if (!empty($item['notes'])): ?>
                                                         <div class="product-notes">
                                                             <i class="fas fa-info-circle"></i>
                                                             <?php echo htmlspecialchars($item['notes']); ?>

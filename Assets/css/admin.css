@@ -240,7 +240,7 @@ body {
 }
 
 /* FIX: Responsive cho stats-grid từ 900px đến 1124px */
-@media (max-width: 1124px) and (min-width: 901px) {
+@media (max-width: 1124px){
     .stats-grid {
         gap: 15px;
     }
@@ -636,7 +636,7 @@ th {
 }
 
 /* FIX: Responsive cho filters từ 900px đến 1124px */
-@media (max-width: 1124px) and (min-width: 901px) {
+@media (max-width: 1124px) {
     .filters {
         flex-direction: column;
         gap: 15px;
@@ -1235,7 +1235,6 @@ a,
         width: 100%;
     }
     
-    
     .users-page .user-info {
         display: flex;
         align-items: center;
@@ -1277,52 +1276,515 @@ a,
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    .role-badge.admin {
+    
+    .users-page .role-badge {
         padding: 2px 6px;
         border-radius: 8px;
         font-size: 10px;
     }
-}
-
-@media (max-width: 960px) {
-    .products-page .custom-table th:nth-child(1),
-    .products-page .custom-table td:nth-child(1), /* Ẩn cột ID */
-    .products-page .custom-table th:nth-child(2),
-    .products-page .custom-table td:nth-child(2), /* Ẩn cột Hình ảnh */
-    .products-page .custom-table th:nth-child(4),
-    .products-page .custom-table td:nth-child(4)  /* Ẩn cột Danh mục */
-    {
-        display: none;
+    
+    .users-page .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .users-page .btn-edit,
+    .users-page .btn-delete {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    
+    .users-page .filters-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .users-page .filter-form {
+        width: 100%;
+    }
+    
+    .users-page .btn-add {
+        width: 100%;
+        text-align: center;
     }
 }
 
-@media (max-width: 867px) {
-    /* Ẩn các cột không cần thiết */
-    .products-page .custom-table th:nth-child(1),
-    .products-page .custom-table td:nth-child(1), /* Ẩn cột ID */
-    .products-page .custom-table th:nth-child(2),
-    .products-page .custom-table td:nth-child(2), /* Ẩn cột Hình ảnh */
-    .products-page .custom-table th:nth-child(4),
-    .products-page .custom-table td:nth-child(4)  /* Ẩn cột Danh mục */
-    {
+/* CSS cho màn hình dưới 480px */
+@media (max-width: 480px) {
+    .users-page .custom-table th:nth-child(1),
+    .users-page .custom-table td:nth-child(1) {
         display: none;
     }
-    /* 4 cột còn lại mỗi cột chiếm 25% */
-    .products-page .custom-table th:nth-child(3),
-    .products-page .custom-table td:nth-child(3), /* Tên sản phẩm */
-    .products-page .custom-table th:nth-child(5),
-    .products-page .custom-table td:nth-child(5), /* Kích thước */
-    .products-page .custom-table th:nth-child(6),
-    .products-page .custom-table td:nth-child(6), /* Giá */
-    .products-page .custom-table th:nth-child(7),
-    .products-page .custom-table td:nth-child(7)  /* Thao tác */
-    {
-        width: 25%;
+    
+    .users-page .custom-table th,
+    .users-page .custom-table td {
+        padding: 6px;
+        font-size: 0.85rem;
+    }
+    
+    .users-page .role-badge {
+        padding: 1px 4px;
+        font-size: 9px;
+    }
+    
+    .users-page .action-buttons {
+        gap: 4px;
+    }
+    
+    .users-page .btn-edit,
+    .users-page .btn-delete {
+        padding: 3px 6px;
+        font-size: 11px;
+    }
+}
+
+/* Đẹp lại filter ngày trong form lọc đơn hàng */
+.filter-dates {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.filter-dates > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.filter-dates label {
+    margin-bottom: 6px;
+    font-size: 1em;
+    color: #444;
+    font-weight: 500;
+}
+.filter-dates input[type="date"] {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    font-size: 1em;
+    background: #fff;
+    transition: border 0.2s;
+}
+.filter-dates input[type="date"]:focus {
+    border: 1.5px solid var(--primary-color);
+    outline: none;
+}
+@media (max-width: 768px) {
+    .filter-dates {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Đẹp lại nút lọc trong form lọc đơn hàng */
+.filter-dates + .btn-filter {
+    align-self: flex-end;
+    min-width: 120px;
+    margin-left: 16px;
+    margin-top: 0;
+    height: 44px;
+    border-radius: 8px;
+    font-size: 1.08em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 768px) {
+    .filter-dates + .btn-filter {
+        align-self: stretch;
+        margin-left: 0;
+        margin-top: 6px;
+        width: 100%;
+    }
+}
+
+/* Đảm bảo nút lọc cùng chiều cao với input ngày trong filter-dates-group */
+.filter-dates-group .btn-filter {
+    height: 42px !important;
+    min-height: 42px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.filter-dates-group input[type="date"] {
+    height: 42px;
+    min-height: 42px;
+    box-sizing: border-box;
+}
+
+/* Đẹp lại form lọc ngày trong orders.php */
+.date-filter-form {
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    background: none;
+}
+.date-filter-form .date-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.date-filter-form label {
+    font-size: 1em;
+    color: #444;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+.date-filter-form input[type="date"] {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    background: #fff;
+    transition: border 0.2s;
+    min-width: 140px;
+    height: 44px;
+    box-sizing: border-box;
+}
+.date-filter-form input[type="date"]:focus {
+    border: 1.5px solid var(--primary-color);
+    outline: none;
+}
+.date-filter-form button[type="submit"] {
+    height: 44px;
+    min-width: 90px;
+    border-radius: 8px;
+    background: var(--primary-color);
+    color: #000;
+    font-weight: 600;
+    font-size: 1.08em;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.date-filter-form button[type="submit"]:hover {
+    background: #d1a94d;
+}
+@media (max-width: 768px) {
+    .date-filter-form,
+    .filter-row,
+    .filter-dates-group,
+    .filter-dates {
+        flex-direction: column !important;
+        gap: 10px !important;
+        align-items: stretch !important;
+        width: 100% !important;
+    }
+    .filter-dates > div,
+    .filter-dates input[type="date"],
+    .filter-dates label,
+    .date-filter-form button[type="submit"],
+    .btn-filter {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+    .btn-filter {
+        margin-left: 0 !important;
+        margin-top: 6px !important;
+    }
+}
+
+/* Đẹp lại select trong filter trạng thái và sắp xếp ở orders.php */
+.filters select,
+.filter-form select,
+.filter-row select {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    background: #fff;
+    transition: border 0.2s;
+    min-width: 140px;
+    height: 44px;
+    box-sizing: border-box;
+    color: #222;
+}
+.filters select:focus,
+.filter-form select:focus,
+.filter-row select:focus {
+    border: 1.5px solid var(--primary-color);
+    outline: none;
+}
+@media (max-width: 768px) {
+    .filters select,
+    .filter-form select,
+    .filter-row select {
+        width: 100%;
         min-width: 0;
-        max-width: none;
-        white-space: normal;
-        overflow: visible;
-        text-overflow: unset;
+    }
+}
+
+/* ========== Order Detail ========== */
+.order-detail {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 32px 28px 32px 28px;
+    margin-bottom: 32px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.detail-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+}
+.detail-section {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 24px 20px 20px 20px;
+    flex: 1 1 340px;
+    min-width: 320px;
+    box-sizing: border-box;
+    margin-bottom: 0;
+}
+.detail-section.full-width {
+    flex: 1 1 100%;
+    min-width: 0;
+    margin-top: 24px;
+}
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+}
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 1.05em;
+}
+.info-item label {
+    font-weight: 600;
+    color: #444;
+    font-size: 0.98em;
+    margin-bottom: 2px;
+}
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+.status-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 16px;
+    font-size: 1em;
+    font-weight: 600;
+    color: #fff;
+    background: #888;
+    margin-top: 2px;
+}
+.status-badge.pending { background: #fbc02d; color: #222; }
+.status-badge.confirmed { background: #2196f3; }
+.status-badge.completed { background: #4caf50; }
+.status-badge.cancelled { background: #e74c3c; }
+
+.total-amount, .subtotal, .price, .sale-price {
+    font-weight: 600;
+    color: #e67e22;
+    font-size: 1.08em;
+}
+.price-sale .original-price {
+    text-decoration: line-through;
+    color: #aaa;
+    font-size: 0.98em;
+    margin-right: 8px;
+}
+.price-sale .sale-price {
+    color: #e67e22;
+    font-weight: 600;
+}
+.product-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    background: #fff;
+}
+.product-name {
+    font-weight: 500;
+    font-size: 1.05em;
+    margin-bottom: 2px;
+}
+.product-notes {
+    font-size: 0.97em;
+    color: #2196f3;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.table-responsive table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+.table-responsive th, .table-responsive td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 1em;
+}
+.table-responsive th {
+    background: #f7f8fa;
+    font-weight: 600;
+    color: #222;
+}
+.table-responsive tr:last-child td {
+    border-bottom: none;
+}
+.table-responsive tfoot td {
+    font-weight: 600;
+    background: #f7f8fa;
+    color: #222;
+}
+.status-form {
+    margin-top: 18px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px 20px 12px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-width: 480px;
+}
+.status-form .form-group {
+    margin-bottom: 18px;
+}
+.status-form label {
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 4px;
+    display: block;
+}
+.status-form select, .status-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    font-size: 1em;
+    background: #fff;
+    margin-top: 2px;
+    margin-bottom: 0;
+    transition: border 0.2s;
+}
+.status-form select:focus, .status-form textarea:focus {
+    border: 1.5px solid var(--primary-color);
+    outline: none;
+}
+.status-form .form-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-top: 10px;
+}
+.status-form .btn-submit {
+    background: var(--primary-color);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 28px;
+    font-size: 1.08rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.status-form .btn-submit:hover {
+    background: #d4a95f;
+    color: #000;
+}
+.status-form .btn-cancel {
+    color: var(--primary-color);
+    background: none;
+    border: none;
+    font-size: 1.08rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: underline;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 8px 18px;
+    transition: background 0.2s, color 0.2s;
+}
+.status-form .btn-cancel:hover {
+    background: rgba(229, 188, 111, 0.12);
+    color: #000;
+    text-decoration: none;
+}
+@media (max-width: 1124px) {
+    .order-detail {
+        padding: 20px 8px 20px 8px;
+    }
+    .detail-grid {
+        gap: 18px;
+    }
+}
+@media (max-width: 900px) {
+    .detail-grid {
+        flex-direction: column;
+        gap: 18px;
+    }
+    .detail-section, .detail-section.full-width {
+        min-width: 0;
+        width: 100%;
+        margin-top: 0;
+    }
+    .order-detail {
+        padding: 12px 2px 18px 2px;
+    }
+}
+@media (max-width: 700px) {
+    .order-detail {
+        padding: 6px 0 10px 0;
+    }
+    .detail-section, .detail-section.full-width {
+        padding: 12px 6px 10px 6px;
+    }
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .table-responsive th, .table-responsive td {
+        padding: 8px 6px;
+        font-size: 0.98em;
+    }
+    .status-form {
+        padding: 10px 6px 8px 6px;
+        max-width: 100%;
+    }
+}
+@media (max-width: 480px) {
+    .order-detail {
+        padding: 2px 0 4px 0;
+    }
+    .detail-section, .detail-section.full-width {
+        padding: 6px 2px 6px 2px;
+    }
+    .info-item label {
+        font-size: 0.95em;
+    }
+    .product-thumbnail {
+        width: 40px;
+        height: 40px;
     }
 }
 

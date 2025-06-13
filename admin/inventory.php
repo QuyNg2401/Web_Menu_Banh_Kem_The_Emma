@@ -8,10 +8,10 @@ checkAuth();
 // Lấy thông tin người dùng
 $user = getCurrentUser();
 
-// Thống kê tổng số vật phẩm nhập kho
-$total_items = $db->selectOne("SELECT COUNT(DISTINCT item_name) as total FROM inventory_in")['total'];
-// Thống kê tổng số lượt nhập kho
-$total_imports = $db->selectOne("SELECT COUNT(*) as total FROM inventory_in")['total'];
+// Thống kê tổng số nguyên liệu nhập kho
+$total_ingredient = $db->selectOne("SELECT COUNT(DISTINCT item_name) as total FROM inventory_in WHERE item_type = 'ingredient'")['total'];
+// Thống kê tổng số vật phẩm đóng gói nhập kho
+$total_packaging = $db->selectOne("SELECT COUNT(*) as total FROM inventory_in WHERE item_type = 'packaging'")['total'];
 
 // Lấy lịch sử nhập kho gần đây
 $recentTransactions = $db->select("
@@ -256,20 +256,20 @@ $recentTransactions = $db->select("
                             <div class="card-icon">
                                 <i class="fas fa-box"></i>
                             </div>
-                            <h3 class="card-title">Tổng vật phẩm nhập kho</h3>
+                            <h3 class="card-title">Tổng nguyên liệu</h3>
                         </div>
-                        <div class="card-value"><?php echo number_format($total_items); ?></div>
-                        <div class="card-footer">Số loại vật phẩm đã từng nhập</div>
+                        <div class="card-value"><?php echo number_format($total_ingredient); ?></div>
+                        <div class="card-footer">Số loại nguyên liệu đã từng nhập</div>
                     </div>
                     <div class="inventory-card">
                         <div class="card-header">
                             <div class="card-icon">
                                 <i class="fas fa-plus"></i>
                             </div>
-                            <h3 class="card-title">Tổng lượt nhập kho</h3>
+                            <h3 class="card-title">Tổng vật phẩm đóng gói</h3>
                         </div>
-                        <div class="card-value"><?php echo number_format($total_imports); ?></div>
-                        <div class="card-footer">Tổng số lần nhập kho</div>
+                        <div class="card-value"><?php echo number_format($total_packaging); ?></div>
+                        <div class="card-footer">Tổng số vật phẩm đóng gói đã nhập</div>
                     </div>
                 </div>
                 
@@ -290,6 +290,7 @@ $recentTransactions = $db->select("
                                 <th>Tên vật phẩm</th>
                                 <th>Số lượng</th>
                                 <th>Người thực hiện</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -297,8 +298,12 @@ $recentTransactions = $db->select("
                             <tr>
                                 <td><?php echo date('d/m/Y H:i', strtotime($transaction['created_at'])); ?></td>
                                 <td><?php echo htmlspecialchars($transaction['item_name']); ?></td>
-                                <td><?php echo $transaction['quantity']; ?></td>
+                                <td><?php echo (intval($transaction['quantity']) == $transaction['quantity']) ? intval($transaction['quantity']) : $transaction['quantity']; ?></td>
                                 <td><?php echo htmlspecialchars($transaction['user_name']); ?></td>
+                                <td>
+                                    <a href="#" class="btn-view" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                                    <a href="#" class="btn-action btn-delete" title="Xóa"><i class="fas fa-trash"></i></a>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>

@@ -132,6 +132,12 @@ $total = $db->selectOne(
                         </a>
                     </li>
                     <li>
+                        <a href="inventory.php">
+                            <i class="fas fa-warehouse"></i>
+                            <span>Quản lý kho</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>
@@ -167,43 +173,51 @@ $total = $db->selectOne(
                 <div class="content-wrapper">
                     <!-- Filters -->
                     <div class="filters">
+                        <form action="" method="GET" class="search-form" style="width: 100%;display:flex; margin-bottom:12px;">
+                            <div class="form-group" style="flex:1; position:relative;">
+                                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm đơn hàng..." style="padding-right:40px;">
+                                <button type="submit" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); background:none; border:none; color:#bbb; font-size:1.15em; cursor:pointer; padding:0;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
                         <form action="" method="GET" class="filter-form">
-                            <div class="form-group">
-                                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm đơn hàng...">
+                            <div class="filter-row" style="display: flex; gap: 16px; align-items: flex-end; margin-bottom: 12px; flex-wrap: wrap;">
+                                <div class="form-group" style="flex:1; min-width:160px;">
+                                    <select name="status">
+                                        <option value="">Tất cả trạng thái</option>
+                                        <?php foreach (ORDER_STATUS as $key => $value): ?>
+                                        <option value="<?php echo $key; ?>" <?php echo $status === $key ? 'selected' : ''; ?>>
+                                            <?php echo $value; ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex:1; min-width:160px;">
+                                    <select name="sort">
+                                        <option value="created_at_desc" <?php echo $sort === 'created_at_desc' ? 'selected' : ''; ?>>Mới nhất</option>
+                                        <option value="created_at_asc" <?php echo $sort === 'created_at_asc' ? 'selected' : ''; ?>>Cũ nhất</option>
+                                        <option value="total_asc" <?php echo $sort === 'total_asc' ? 'selected' : ''; ?>>Tổng tiền tăng dần</option>
+                                        <option value="total_desc" <?php echo $sort === 'total_desc' ? 'selected' : ''; ?>>Tổng tiền giảm dần</option>
+                                    </select>
+                                </div>
                             </div>
-                            
-                            <div class="form-group">
-                                <select name="status">
-                                    <option value="">Tất cả trạng thái</option>
-                                    <?php foreach (ORDER_STATUS as $key => $value): ?>
-                                    <option value="<?php echo $key; ?>" <?php echo $status === $key ? 'selected' : ''; ?>>
-                                        <?php echo $value; ?>
-                                    </option>
-                                    <?php endforeach; ?>
-                                </select>
+                            <div class="filter-row filter-dates-group" style="display: flex; gap: 16px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap;">
+                                <div class="filter-dates" style="flex:2; display: flex; gap: 16px; min-width:260px;">
+                                    <div style="flex:1; display: flex; flex-direction: column;">
+                                        <label for="date_from" style="margin-bottom:4px; font-size:0.97em; color:#444;">Từ ngày</label>
+                                        <input type="date" id="date_from" name="date_from" value="<?php echo $date_from; ?>" placeholder="Từ ngày">
+                                    </div>
+                                    <div style="flex:1; display: flex; flex-direction: column;">
+                                        <label for="date_to" style="margin-bottom:4px; font-size:0.97em; color:#444;">Đến ngày</label>
+                                        <input type="date" id="date_to" name="date_to" value="<?php echo $date_to; ?>" placeholder="Đến ngày">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-filter" style="flex-basis:10%; max-width:10%; align-self:center; min-width:100px; height:44px; margin:0; border-radius:8px; font-size:1.08em; font-weight:600; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                                    <i class="fas fa-filter"></i>
+                                    Lọc
+                                </button>
                             </div>
-                            
-                            <div class="form-group">
-                                <input type="date" name="date_from" value="<?php echo $date_from; ?>" placeholder="Từ ngày">
-                            </div>
-                            
-                            <div class="form-group">
-                                <input type="date" name="date_to" value="<?php echo $date_to; ?>" placeholder="Đến ngày">
-                            </div>
-                            
-                            <div class="form-group">
-                                <select name="sort">
-                                    <option value="created_at_desc" <?php echo $sort === 'created_at_desc' ? 'selected' : ''; ?>>Mới nhất</option>
-                                    <option value="created_at_asc" <?php echo $sort === 'created_at_asc' ? 'selected' : ''; ?>>Cũ nhất</option>
-                                    <option value="total_asc" <?php echo $sort === 'total_asc' ? 'selected' : ''; ?>>Tổng tiền tăng dần</option>
-                                    <option value="total_desc" <?php echo $sort === 'total_desc' ? 'selected' : ''; ?>>Tổng tiền giảm dần</option>
-                                </select>
-                            </div>
-                            
-                            <button type="submit" class="btn-filter">
-                                <i class="fas fa-filter"></i>
-                                Lọc
-                            </button>
                         </form>
                     </div>
                     
@@ -214,10 +228,8 @@ $total = $db->selectOne(
                                 <tr>
                                     <th>Mã đơn</th>
                                     <th>Khách hàng</th>
-                                    <th>Sản phẩm</th>
                                     <th>Tổng tiền</th>
                                     <th>Trạng thái</th>
-                                    <th>Ngày đặt</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -230,45 +242,25 @@ $total = $db->selectOne(
                                         </a>
                                     </td>
                                     <td>
-                                        <div class="customer-info">
-                                            <div class="customer-name"><?php echo htmlspecialchars($order['customer_name']); ?></div>
-                                            <div class="customer-contact">
-                                                <span><i class="fas fa-phone"></i> <?php echo $order['customer_phone']; ?></span>
-                                                <?php if ($order['customer_email']): ?>
-                                                <span><i class="fas fa-envelope"></i> <?php echo $order['customer_email']; ?></span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
+                                        <?php echo htmlspecialchars($order['customer_name']); ?>
                                     </td>
                                     <td>
-                                        <div class="order-items">
-                                            <span class="items-count"><?php echo $order['total_items']; ?> sản phẩm</span>
-                                            <div class="items-preview" title="<?php echo htmlspecialchars($order['product_names']); ?>">
-                                                <?php echo htmlspecialchars($order['product_names']); ?>
-                                            </div>
-                                        </div>
+                                        <?php echo number_format($order['total_amount']); ?> VNĐ
                                     </td>
                                     <td>
-                                        <div class="order-total">
-                                            <?php echo number_format($order['total_amount']); ?> VNĐ
-                                            <?php if ($order['payment_method']): ?>
-                                            <span class="payment-method">
-                                                <i class="fas fa-credit-card"></i>
-                                                <?php echo PAYMENT_METHODS[$order['payment_method']] ?? $order['payment_method']; ?>
-                                            </span>
+                                        <button class="btn-status-toggle" data-id="<?php echo $order['id']; ?>" data-status="<?php echo $order['status']; ?>" style="border:none; background:none; cursor:pointer; outline:none;">
+                                            <?php if ($order['status'] === 'pending'): ?>
+                                                <i class="fas fa-check-circle" style="color:#2196f3; font-size:1.5em;"></i>
+                                            <?php elseif ($order['status'] === 'confirmed'): ?>
+                                                <i class="fas fa-check-circle" style="color:#4caf50; font-size:1.5em;"></i>
+                                            <?php elseif ($order['status'] === 'completed'): ?>
+                                                <i class="fas fa-check-circle" style="color:#aaa; font-size:1.5em;"></i>
+                                            <?php else: ?>
+                                                <i class="fas fa-times-circle" style="color:#e74c3c; font-size:1.5em;"></i>
                                             <?php endif; ?>
-                                        </div>
+                                        </button>
+                                        <span class="status-label"><?php echo ORDER_STATUS[$order['status']]; ?></span>
                                     </td>
-                                    <td>
-                                        <select class="status-select" data-id="<?php echo $order['id']; ?>" data-type="orders" data-original-status="<?php echo $order['status']; ?>">
-                                            <?php foreach (ORDER_STATUS as $key => $value): ?>
-                                            <option value="<?php echo $key; ?>" <?php echo $order['status'] === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </td>
-                                    <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
                                     <td>
                                         <div class="action-buttons">
                                             <a href="order-detail.php?id=<?php echo $order['id']; ?>" class="btn-view" title="Xem chi tiết">
@@ -337,6 +329,44 @@ $total = $db->selectOne(
                 sidebar.classList.remove('active');
             }
         }
+    });
+    document.querySelectorAll('.btn-status-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var id = this.getAttribute('data-id');
+            var status = this.getAttribute('data-status');
+            var nextStatus = '';
+            if (status === 'pending') nextStatus = 'confirmed';
+            else if (status === 'confirmed') nextStatus = 'completed';
+            else return;
+            var btnEl = this;
+            fetch('update-order-status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'id=' + encodeURIComponent(id) + '&status=' + encodeURIComponent(nextStatus)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    btnEl.setAttribute('data-status', nextStatus);
+                    if (nextStatus === 'confirmed') {
+                        btnEl.innerHTML = '<i class="fas fa-check-circle" style="color:#4caf50; font-size:1.5em;"></i>';
+                        btnEl.nextElementSibling.textContent = 'Đã xác nhận';
+                    } else if (nextStatus === 'completed') {
+                        btnEl.innerHTML = '<i class="fas fa-check-circle" style="color:#aaa; font-size:1.5em;"></i>';
+                        btnEl.nextElementSibling.textContent = 'Hoàn thành';
+                        // Ẩn nút xóa trong cùng hàng
+                        var row = btnEl.closest('tr');
+                        if(row) {
+                            var btnDelete = row.querySelector('.btn-delete');
+                            if(btnDelete) btnDelete.style.display = 'none';
+                        }
+                    }
+                } else {
+                    alert('Cập nhật trạng thái thất bại!');
+                }
+            });
+        });
     });
     </script>
 </body>

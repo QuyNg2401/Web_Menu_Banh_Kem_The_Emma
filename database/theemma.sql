@@ -33,6 +33,7 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('admin','user') DEFAULT 'user',
+  `phone` varchar(20) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
@@ -42,8 +43,8 @@ CREATE TABLE `users` (
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`) VALUES
-(1, 'Admin', 'admin@theemma.com', '$2y$10$JW3kZlnK8MushDeG.MkHSuk29kKfDLtnkKPR1tQvX7Z4Wic2MlX9a', 'admin', '2025-06-06 04:22:22');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `created_at`) VALUES
+(1, 'Admin', 'admin@theemma.com', '$2y$10$JW3kZlnK8MushDeG.MkHSuk29kKfDLtnkKPR1tQvX7Z4Wic2MlX9a', 'admin', '0123456789', '2025-06-06 04:22:22');
 
 -- --------------------------------------------------------
 
@@ -106,11 +107,26 @@ INSERT INTO `products` (`id`, `name`, `price`, `description`, `image`, `status`,
 CREATE TABLE IF NOT EXISTS `orders` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
+  `order_code` VARCHAR(50),
+  `customer_name` VARCHAR(100),
+  `customer_phone` VARCHAR(20),
+  `customer_email` VARCHAR(100),
+  `payment_method` VARCHAR(50),
   `total_amount` DECIMAL(10,2) NOT NULL,
   `status` VARCHAR(50) NOT NULL,
+  `notes` TEXT DEFAULT NULL,
+  `shipping_address` VARCHAR(255) DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Đang đổ dữ liệu cho bảng `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `order_code`, `customer_name`, `customer_phone`, `customer_email`, `payment_method`, `total_amount`, `status`, `notes`, `shipping_address`, `created_at`, `updated_at`) VALUES
+(1, 1, 'DH0001', 'Admin', '0123456789', 'admin@theemma.com', 'cod', 700000, 'pending', 'Giao hàng trong giờ hành chính', '123 Đường ABC, Quận 1, TP.HCM', NOW(), NOW()),
+(2, 1, 'DH0002', 'Admin', '0123456789', 'admin@theemma.com', 'cod', 355000, 'completed', 'Khách nhận sau 18h', '456 Đường XYZ, Quận 3, TP.HCM', NOW(), NOW());
 
 -- --------------------------------------------------------
 
@@ -124,9 +140,19 @@ CREATE TABLE IF NOT EXISTS `order_items` (
   `product_id` INT NOT NULL,
   `quantity` INT NOT NULL,
   `price` DECIMAL(10,2) NOT NULL,
+  `notes` TEXT DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Đang đổ dữ liệu cho bảng `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`, `notes`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, 350000, '', NOW(), NOW()),
+(2, 1, 2, 1, 350000, '', NOW(), NOW()),
+(3, 2, 2, 1, 355000, '', NOW(), NOW());
 
 -- --------------------------------------------------------
 
@@ -186,11 +212,20 @@ CREATE TABLE `inventory_in` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `item_name` VARCHAR(100) NOT NULL,
     `quantity` DECIMAL(10,2) NOT NULL,
+    `item_type` VARCHAR(50) DEFAULT NULL,
     `notes` TEXT,
     `created_by` INT,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Đang đổ dữ liệu cho bảng `inventory_in`
+
+INSERT INTO `inventory_in` (`id`, `item_name`, `quantity`, `item_type`, `notes`, `created_by`, `created_at`) VALUES
+(1, 'Bột mì', 50, 'ingredient', 'Nhập nguyên liệu làm bánh', 1, NOW()),
+(2, 'Đường', 30, 'ingredient', 'Nguyên liệu cơ bản', 1, NOW()),
+(3, 'Hộp giấy', 100, 'packaging', 'Hộp đựng bánh size lớn', 1, NOW()),
+(4, 'Túi nilon', 200, 'packaging', 'Túi đựng bánh nhỏ', 1, NOW());
 
 COMMIT;
 

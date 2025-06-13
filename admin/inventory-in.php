@@ -8,26 +8,19 @@ checkAuth();
 // Lấy thông tin người dùng
 $user = getCurrentUser();
 
-// Lấy danh sách nhà cung cấp
-$suppliers = $db->select("SELECT * FROM suppliers ORDER BY name");
-
-// Lấy danh sách danh mục nguyên liệu
-$ingredientCategories = $db->select("SELECT * FROM ingredient_categories ORDER BY name");
-
-// Lấy danh sách danh mục vật phẩm đóng gói
-$packagingCategories = $db->select("SELECT * FROM packaging_categories ORDER BY name");
-
 // Xử lý form submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $db->beginTransaction();
         
+        $itemType = $_POST['item_type'];
         $itemName = $_POST['item_name'];
         $quantity = $_POST['quantity'];
         $notes = $_POST['notes'];
         
         // Thêm vào lịch sử nhập kho
         $db->insert('inventory_in', [
+            'item_type' => $itemType,
             'item_name' => $itemName,
             'quantity' => $quantity,
             'notes' => $notes,
@@ -208,6 +201,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="form-container">
                 <form method="POST" action="">
+                    <div class="form-group">
+                        <label>Phân loại</label>
+                        <select name="item_type" class="form-control" required>
+                            <option value="ingredient">Nguyên liệu</option>
+                            <option value="packaging">Vật phẩm đóng gói</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label>Tên vật phẩm</label>
                         <input type="text" name="item_name" class="form-control" required placeholder="Nhập tên vật phẩm">

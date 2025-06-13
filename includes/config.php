@@ -101,10 +101,8 @@ define('CART_EXPIRY', 24 * 60 * 60); // 24 hours
 define('ORDER_STATUS', [
     'pending' => 'Chờ xác nhận',
     'confirmed' => 'Đã xác nhận',
-    'processing' => 'Đang xử lý',
-    'shipping' => 'Đang giao hàng',
-    'delivered' => 'Đã giao hàng',
-    'cancelled' => 'Đã hủy'
+    'completed' => 'Hoàn thành',
+    'cancelled' => 'Hủy đơn hàng'
 ]);
 
 // Payment methods
