@@ -53,15 +53,32 @@ class Database {
         return $stmt->fetch();
     }
     
-    public function insert($query, $params = []) {
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute($params);
+    public function insert($table, $data = []) {
+        $fields = array_keys($data);
+        $placeholders = array_map(function($f) { return ':' . $f; }, $fields);
+        $sql = "INSERT INTO `$table` (" . implode(',', $fields) . ") VALUES (" . implode(',', $placeholders) . ")";
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+        $stmt->execute();
         return $this->pdo->lastInsertId();
     }
     
-    public function update($query, $params = []) {
-        $stmt = $this->pdo->prepare($query);
-        return $stmt->execute($params);
+    public function update($table, $data = [], $where = []) {
+        $fields = array_keys($data);
+        $set = implode(', ', array_map(function($f) { return "`$f` = :set_$f"; }, $fields));
+        $whereFields = array_keys($where);
+        $whereClause = implode(' AND ', array_map(function($f) { return "`$f` = :where_$f"; }, $whereFields));
+        $sql = "UPDATE `$table` SET $set WHERE $whereClause";
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(':set_' . $key, $value);
+        }
+        foreach ($where as $key => $value) {
+            $stmt->bindValue(':where_' . $key, $value);
+        }
+        return $stmt->execute();
     }
     
     public function delete($query, $params = []) {

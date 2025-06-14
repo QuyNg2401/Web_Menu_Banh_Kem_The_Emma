@@ -43,6 +43,32 @@ $topProducts = $db->select(
     <title>Admin Panel - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../Assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+    .status-badge {
+        font-size: 0.95rem;
+        padding: 6px 14px;
+        border-radius: 14px;
+        font-weight: 500;
+        display: inline-block;
+        min-width: 70px;
+        text-align: center;
+        line-height: 1.2;
+    }
+    @media (max-width: 768px) {
+        .status-badge {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            min-width: 50px;
+        }
+    }
+    @media (max-width: 546px) {
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 3px 7px;
+            min-width: 36px;
+        }
+    }
+    </style>
 </head>
 <body>
     <div class="admin-container">

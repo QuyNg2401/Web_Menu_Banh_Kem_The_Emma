@@ -13,16 +13,16 @@ $total_ingredient = $db->selectOne("SELECT COUNT(DISTINCT item_name) as total FR
 // Thống kê tổng số vật phẩm đóng gói nhập kho
 $total_packaging = $db->selectOne("SELECT COUNT(*) as total FROM inventory_in WHERE item_type = 'packaging'")['total'];
 
-// Lấy lịch sử nhập kho gần đây
+// Lấy lịch sử kiểm kho gần đây (luôn hiển thị tất cả vật phẩm trong kho, kể cả chưa kiểm kho)
 $recentTransactions = $db->select("
-    SELECT 
-        inventory_in.created_at,
-        inventory_in.item_name,
-        inventory_in.quantity,
-        u.name as user_name
-    FROM inventory_in
-    LEFT JOIN users u ON inventory_in.created_by = u.id
-    ORDER BY inventory_in.created_at DESC
+    SELECT ii.*, ic.actual_quantity, ic.note, ic.created_at as check_time
+    FROM inventory_in ii
+    LEFT JOIN (
+        SELECT * FROM inventory_check WHERE (item_id, created_at) IN (
+            SELECT item_id, MAX(created_at) FROM inventory_check GROUP BY item_id
+        )
+    ) ic ON ii.id = ic.item_id
+    ORDER BY ii.created_at DESC
     LIMIT 10
 ");
 ?>
@@ -140,6 +140,10 @@ $recentTransactions = $db->select("
             opacity: 0.9;
         }
         
+        .action-button.check {
+            background: #2ecc71;
+        }
+        
         .warning-badge {
             background: #ff4444;
             color: #fff;
@@ -161,6 +165,92 @@ $recentTransactions = $db->select("
                 width: 100%;
                 justify-content: center;
             }
+        }
+        
+        #detailModal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.25);
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        #detailModal.active {
+            display: flex;
+            animation: fadeInBg 0.3s;
+        }
+        @keyframes fadeInBg {
+            from { background: rgba(0,0,0,0); }
+            to { background: rgba(0,0,0,0.25); }
+        }
+        .modal-content-detail {
+            background: #fff;
+            padding: 28px 24px 18px 24px;
+            border-radius: 14px;
+            max-width: 95vw;
+            width: 350px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            position: relative;
+            animation: modalZoomIn 0.35s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        @keyframes modalZoomIn {
+            0% { transform: scale(0.7) translateY(40px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .modal-content-detail h3 {
+            margin-top: 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .modal-content-detail .modalDetailContent {
+            font-size: 15px;
+            color: #222;
+            white-space: pre-line;
+            margin-bottom: 10px;
+        }
+        .modal-content-detail .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+        .modal-content-detail button {
+            background: #eee;
+            color: #222;
+            border: none;
+            padding: 7px 18px;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .modal-content-detail button:hover {
+            background: #2ecc71;
+            color: #fff;
+        }
+        .modal-close-x {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: none;
+            border: none;
+            font-size: 1.7rem;
+            color: #888;
+            cursor: pointer;
+            z-index: 2;
+            transition: color 0.2s;
+            padding: 0 6px;
+            line-height: 1;
+        }
+        .modal-close-x:hover {
+            color: #f7f7f7 !important;
+            background:  #e74c3c !important;
         }
     </style>
 </head>
@@ -279,6 +369,10 @@ $recentTransactions = $db->select("
                         <i class="fas fa-plus"></i>
                         Nhập kho
                     </button>
+                    <button class="action-button check" onclick="location.href='inventory-check.php'">
+                        <i class="fas fa-clipboard-check"></i>
+                        Kiểm kho
+                    </button>
                 </div>
                 
                 <!-- Bảng lịch sử nhập kho -->
@@ -286,22 +380,27 @@ $recentTransactions = $db->select("
                     <table class="custom-table">
                         <thead>
                             <tr>
-                                <th>Thời gian</th>
                                 <th>Tên vật phẩm</th>
+                                <th>Giá tiền</th>
                                 <th>Số lượng</th>
-                                <th>Người thực hiện</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($recentTransactions as $transaction): ?>
                             <tr>
-                                <td><?php echo date('d/m/Y H:i', strtotime($transaction['created_at'])); ?></td>
                                 <td><?php echo htmlspecialchars($transaction['item_name']); ?></td>
+                                <td><?php echo number_format($transaction['price']); ?> VNĐ</td>
                                 <td><?php echo (intval($transaction['quantity']) == $transaction['quantity']) ? intval($transaction['quantity']) : $transaction['quantity']; ?></td>
-                                <td><?php echo htmlspecialchars($transaction['user_name']); ?></td>
                                 <td>
-                                    <a href="#" class="btn-view" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                                    <a href="#" class="btn-view" title="Xem chi tiết" onclick='showDetails(<?php echo json_encode([
+                                        "item_name" => $transaction["item_name"],
+                                        "quantity" => $transaction["quantity"],
+                                        "actual_quantity" => $transaction["actual_quantity"],
+                                        "note" => $transaction["note"],
+                                        "check_time" => $transaction["check_time"],
+                                        "user_name" => $transaction["user_name"] ?? ""
+                                    ]); ?>); return false;'><i class="fas fa-eye"></i></a>
                                     <a href="#" class="btn-action btn-delete" title="Xóa"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
@@ -311,6 +410,15 @@ $recentTransactions = $db->select("
                 </div>
             </div>
         </main>
+    </div>
+    
+    <!-- Modal chi tiết vật phẩm -->
+    <div id="detailModal">
+        <div class="modal-content-detail">
+            <button onclick="closeDetailModal()" class="modal-close-x" title="Đóng">&times;</button>
+            <h3>Chi tiết vật phẩm</h3>
+            <div id="modalDetailContent" class="modalDetailContent"></div>
+        </div>
     </div>
     
     <script src="../Assets/js/admin.js"></script>
@@ -329,6 +437,25 @@ $recentTransactions = $db->select("
             }
         }
     });
+
+    // Hiển thị thông tin chi tiết bằng modal
+    function showDetails(data) {
+        let message = `Tên vật phẩm: ${data.item_name}\n`;
+        if (data.actual_quantity !== null && data.check_time !== null) {
+            message += `Thời gian kiểm: ${data.check_time ? new Date(data.check_time).toLocaleString('vi-VN') : 'Chưa kiểm kho'}\n`;
+            message += `Người thực hiện: ${data.user_name || 'Chưa kiểm kho'}\n`;
+            if (data.note) {
+                message += `Ghi chú: ${data.note}`;
+            }
+        } else {
+            message += 'Chưa kiểm kho!';
+        }
+        document.getElementById('modalDetailContent').textContent = message;
+        document.getElementById('detailModal').classList.add('active');
+    }
+    function closeDetailModal() {
+        document.getElementById('detailModal').classList.remove('active');
+    }
     </script>
 </body>
 </html> 

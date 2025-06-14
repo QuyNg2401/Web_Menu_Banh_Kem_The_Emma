@@ -30,8 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $expires = date('Y-m-d H:i:s', strtotime('+1 day'));
                 
                 $db->insert(
-                    "INSERT INTO user_tokens (user_id, token, expires_at) VALUES (?, ?, ?)",
-                    [$user['id'], $token, $expires]
+                    'user_tokens',
+                    [
+                        'user_id' => $user['id'],
+                        'token' => $token,
+                        'expires_at' => $expires
+                    ]
                 );
                 
                 // Lưu token vào session

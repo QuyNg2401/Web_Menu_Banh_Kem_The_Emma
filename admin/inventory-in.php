@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $itemType = $_POST['item_type'];
         $itemName = $_POST['item_name'];
         $quantity = $_POST['quantity'];
+        $price = $_POST['price'];
         $notes = $_POST['notes'];
         
         // Thêm vào lịch sử nhập kho
@@ -23,8 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'item_type' => $itemType,
             'item_name' => $itemName,
             'quantity' => $quantity,
+            'price' => $price,
             'notes' => $notes,
-            'created_by' => $user['id']
+            'created_by' => $user['id'],
+            'created_at' => date('Y-m-d H:i:s')
         ]);
         
         $db->commit();
@@ -216,6 +219,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label>Số lượng</label>
                         <input type="number" name="quantity" class="form-control" required min="0" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">Giá tiền (VNĐ)</label>
+                        <input type="number" id="price" name="price" class="form-control" min="0" step="1000" required>
                     </div>
                     
                     <div class="form-group">

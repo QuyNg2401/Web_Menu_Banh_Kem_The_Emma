@@ -44,7 +44,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `created_at`) VALUES
-(1, 'Admin', 'admin@theemma.com', '$2y$10$JW3kZlnK8MushDeG.MkHSuk29kKfDLtnkKPR1tQvX7Z4Wic2MlX9a', 'admin', '0123456789', '2025-06-06 04:22:22');
+(1, 'Admin', 'admin@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'admin', '0123456789', '2025-06-06 04:22:22');
 
 -- --------------------------------------------------------
 
@@ -212,6 +212,7 @@ CREATE TABLE `inventory_in` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `item_name` VARCHAR(100) NOT NULL,
     `quantity` DECIMAL(10,2) NOT NULL,
+    `price` DECIMAL(15,2) DEFAULT 0,
     `item_type` VARCHAR(50) DEFAULT NULL,
     `notes` TEXT,
     `created_by` INT,
@@ -221,11 +222,28 @@ CREATE TABLE `inventory_in` (
 
 -- Đang đổ dữ liệu cho bảng `inventory_in`
 
-INSERT INTO `inventory_in` (`id`, `item_name`, `quantity`, `item_type`, `notes`, `created_by`, `created_at`) VALUES
-(1, 'Bột mì', 50, 'ingredient', 'Nhập nguyên liệu làm bánh', 1, NOW()),
-(2, 'Đường', 30, 'ingredient', 'Nguyên liệu cơ bản', 1, NOW()),
-(3, 'Hộp giấy', 100, 'packaging', 'Hộp đựng bánh size lớn', 1, NOW()),
-(4, 'Túi nilon', 200, 'packaging', 'Túi đựng bánh nhỏ', 1, NOW());
+INSERT INTO `inventory_in` (`id`, `item_name`, `quantity`, `price`, `item_type`, `notes`, `created_by`, `created_at`) VALUES
+(1, 'Bột mì', 50, 100000, 'ingredient', 'Nhập nguyên liệu làm bánh', 1, NOW()),
+(2, 'Đường', 30, 50000, 'ingredient', 'Nguyên liệu cơ bản', 1, NOW()),
+(3, 'Hộp giấy', 100, 20000, 'packaging', 'Hộp đựng bánh size lớn', 1, NOW()),
+(4, 'Túi nilon', 200, 10000, 'packaging', 'Túi đựng bánh nhỏ', 1, NOW());
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `inventory_check`
+--
+
+CREATE TABLE `inventory_check` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `item_id` INT NOT NULL,
+    `actual_quantity` DECIMAL(10,2) NOT NULL,
+    `note` TEXT,
+    `created_by` INT NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`item_id`) REFERENCES `inventory_in`(`id`),
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;
 
