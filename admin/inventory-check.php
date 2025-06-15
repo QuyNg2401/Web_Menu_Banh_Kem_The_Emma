@@ -13,33 +13,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $item_id = $_POST['item_id'];
     $actual_quantity = $_POST['actual_quantity'];
     $note = $_POST['note'];
-    
-    // Lưu thông tin kiểm kho
+    // Lấy số lượng hiện tại trước kiểm kho
+    $item = $db->selectOne("SELECT quantity FROM inventory_in WHERE id = ?", [$item_id]);
+    $before_quantity = $item ? $item['quantity'] : null;
     $db->insert('inventory_check', [
         'item_id' => $item_id,
+        'before_quantity' => $before_quantity,
         'actual_quantity' => $actual_quantity,
         'note' => $note,
         'created_by' => $user['id'],
         'created_at' => date('Y-m-d H:i:s')
     ]);
-    
+
     // Cập nhật số lượng trong kho
     $db->update('inventory_in', 
         ['quantity' => $actual_quantity],
         ['id' => $item_id]
     );
-    
+
     header('Location: inventory.php');
     exit;
 }
 
-// Lấy danh sách vật phẩm trong kho
+// Lấy danh sách vật phẩm trong kho, kèm lần kiểm kho gần nhất
 $items = $db->select("
-    SELECT 
-        inventory_in.*,
-        COALESCE(inventory_check.created_at, inventory_in.created_at) as last_check
+    SELECT inventory_in.*, 
+        (SELECT actual_quantity FROM inventory_check WHERE item_id = inventory_in.id ORDER BY created_at DESC LIMIT 1) as last_actual_quantity,
+        (SELECT MAX(created_at) FROM inventory_check WHERE item_id = inventory_in.id) as last_check
     FROM inventory_in
-    LEFT JOIN inventory_check ON inventory_in.id = inventory_check.item_id
     ORDER BY inventory_in.item_name ASC
 ");
 ?>
@@ -123,7 +124,7 @@ $items = $db->select("
 <body>
     <div class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <div class="col-md-2 col-lg-2 px-0 sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
                 <div style="display:inline-block;vertical-align:middle;">
@@ -171,6 +172,12 @@ $items = $db->select("
                         </a>
                     </li>
                     <li>
+                        <a href="bcpt.php">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Thống kê & Báo cáo</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>
@@ -185,7 +192,7 @@ $items = $db->select("
                     <span>Đăng xuất</span>
                 </a>
             </div>
-        </aside>
+        </div>
         
         <!-- Main Content -->
         <main class="main-content">
@@ -221,7 +228,14 @@ $items = $db->select("
                                 <td>
                                     <?php echo htmlspecialchars($item['item_name']); ?>
                                     <div class="last-check" style="font-size:12px;color:#888;">
-                                        Lần kiểm cuối: <?php echo date('d/m/Y H:i', strtotime($item['last_check'])); ?>
+                                        Lần kiểm cuối: 
+                                        <?php 
+                                            if (!empty($item['last_check'])) {
+                                                echo date('d/m/Y H:i', strtotime($item['last_check']));
+                                            } else {
+                                                echo 'Chưa kiểm kho';
+                                            }
+                                        ?>
                                     </div>
                                 </td>
                                 <td><?php echo intval($item['quantity']); ?></td>

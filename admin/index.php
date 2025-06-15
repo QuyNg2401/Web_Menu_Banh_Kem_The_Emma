@@ -121,6 +121,12 @@ $topProducts = $db->select(
                         </a>
                     </li>
                     <li>
+                        <a href="bcpt.php">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Thống kê & Báo cáo</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>

@@ -25,6 +25,13 @@ $recentTransactions = $db->select("
     ORDER BY ii.created_at DESC
     LIMIT 10
 ");
+
+// Lấy lịch sử kiểm kho cho tất cả vật phẩm (group theo item_id, order by created_at desc)
+$inventoryCheckHistory = [];
+$rows = $db->select("SELECT ic.*, u.name as user_name FROM inventory_check ic LEFT JOIN users u ON ic.created_by = u.id ORDER BY ic.item_id, ic.created_at ASC");
+foreach ($rows as $row) {
+    $inventoryCheckHistory[$row['item_id']][] = $row;
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -213,6 +220,8 @@ $recentTransactions = $db->select("
             color: #222;
             white-space: pre-line;
             margin-bottom: 10px;
+            max-height: 120px;
+            overflow-y: auto;
         }
         .modal-content-detail .modal-actions {
             display: flex;
@@ -257,7 +266,7 @@ $recentTransactions = $db->select("
 <body>
     <div class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <div class="col-md-2 col-lg-2 px-0 sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
                 <div style="display:inline-block;vertical-align:middle;">
@@ -305,6 +314,12 @@ $recentTransactions = $db->select("
                         </a>
                     </li>
                     <li>
+                        <a href="bcpt.php">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Thống kê & Báo cáo</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>
@@ -319,7 +334,7 @@ $recentTransactions = $db->select("
                     <span>Đăng xuất</span>
                 </a>
             </div>
-        </aside>
+        </div>
         
         <!-- Main Content -->
         <main class="main-content">
@@ -394,6 +409,7 @@ $recentTransactions = $db->select("
                                 <td><?php echo (intval($transaction['quantity']) == $transaction['quantity']) ? intval($transaction['quantity']) : $transaction['quantity']; ?></td>
                                 <td>
                                     <a href="#" class="btn-view" title="Xem chi tiết" onclick='showDetails(<?php echo json_encode([
+                                        "item_id" => $transaction["id"],
                                         "item_name" => $transaction["item_name"],
                                         "quantity" => $transaction["quantity"],
                                         "actual_quantity" => $transaction["actual_quantity"],
@@ -442,13 +458,34 @@ $recentTransactions = $db->select("
     function showDetails(data) {
         let message = `Tên vật phẩm: ${data.item_name}\n`;
         if (data.actual_quantity !== null && data.check_time !== null) {
-            message += `Thời gian kiểm: ${data.check_time ? new Date(data.check_time).toLocaleString('vi-VN') : 'Chưa kiểm kho'}\n`;
+            message += `Thời gian kiểm gần nhất: ${data.check_time ? new Date(data.check_time).toLocaleString('vi-VN') : 'Chưa kiểm kho'}\n`;
             message += `Người thực hiện: ${data.user_name || 'Chưa kiểm kho'}\n`;
-            if (data.note) {
-                message += `Ghi chú: ${data.note}`;
-            }
         } else {
             message += 'Chưa kiểm kho!';
+        }
+        // Thêm lịch sử kiểm kho
+        if (data.item_id && window.inventoryCheckHistory && window.inventoryCheckHistory[data.item_id]) {
+            message += `\n--- Lịch sử kiểm kho ---\n`;
+            let html = '';
+            window.inventoryCheckHistory[data.item_id].forEach(function(his) {
+                let change = null;
+                if (his.before_quantity !== null && his.actual_quantity !== null) {
+                    change = his.actual_quantity - his.before_quantity;
+                }
+                let color = '';
+                if (change !== null) {
+                    if (change < 0) color = 'red';
+                    else if (change > 0) color = 'green';
+                }
+                html += `Ngày: ${new Date(his.created_at).toLocaleDateString('vi-VN')}`;
+                if (change !== null) html += ` | Số lượng thay đổi: <span style=\"color:${color};font-weight:bold;\">${change}</span>`;
+                if (his.note && his.note.trim() !== '') html += `<br/><span style=\"font-style:italic;\">Ghi chú: ${his.note}</span>`;
+                html += `<br/>`;
+                html += `<br/>`;
+            });
+            document.getElementById('modalDetailContent').innerHTML = message.replace(/\n/g, '<br/>') + html;
+            document.getElementById('detailModal').classList.add('active');
+            return;
         }
         document.getElementById('modalDetailContent').textContent = message;
         document.getElementById('detailModal').classList.add('active');
@@ -456,6 +493,10 @@ $recentTransactions = $db->select("
     function closeDetailModal() {
         document.getElementById('detailModal').classList.remove('active');
     }
+    </script>
+    <script>
+    // Đưa dữ liệu lịch sử kiểm kho sang JS
+    window.inventoryCheckHistory = <?php echo json_encode($inventoryCheckHistory); ?>;
     </script>
 </body>
 </html> 

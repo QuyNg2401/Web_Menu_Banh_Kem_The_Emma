@@ -1,0 +1,186 @@
+/* Main Content */
+.col-md-10 {
+    margin-left: 250px;
+    transition: all 0.3s;
+}
+
+/* Cards */
+.card-metric {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.card-metric:hover {
+    transform: translateY(-5px);
+}
+
+.card-revenue {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+    color: white;
+}
+
+.card-orders {
+    background: linear-gradient(45deg, #FFA726, #FB8C00);
+    color: #fff;
+}
+
+.card-products {
+    background: linear-gradient(45deg, #FFC107, #FFA000);
+    color: white;
+}
+
+.card-inventory {
+    background: linear-gradient(45deg, #ec4899, #be185d);
+    color: #fff;
+}
+
+.card-inventory .metric-icon {
+    color: #fff;
+}
+
+.card-header{
+    background: var(--secondary-color);
+}
+
+.metric-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 20px 0;
+}
+
+/* Tables */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    background: #f8f9fa;
+}
+
+/* Buttons */
+.time-filter {
+    border: 1.5px solid var(--primary-color);
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 10px 22px;
+    margin-right: 8px;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+    box-shadow: none;
+}
+.time-filter:last-child { margin-right: 0; }
+.time-filter:hover {
+    border-color: var(--primary-color);
+}
+
+/* Trends */
+.trend-up {
+    color: #28a745;
+}
+
+.trend-down {
+    color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .col-md-10 {
+        margin-left: 0;
+    }
+    
+    body.sidebar-open {
+        overflow: hidden;
+    }
+}
+
+/* Date Range Picker */
+.date-range-container {
+    position: relative;
+}
+
+.date-range-container .input-group {
+    width: auto;
+}
+
+/* Modal */
+.modal-xl {
+    max-width: 90%;
+}
+
+.modal-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 8px 20px;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background: #cfa44e;
+    color: #fff;
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 8px 20px;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: #222;
+    color: #fff;
+}
+.btn.time-filter.active, 
+.time-filter.active , .btn-primary.active{
+    background: #CFA44E;
+    color: var(--secondary-color);
+}

@@ -237,6 +237,7 @@ INSERT INTO `inventory_in` (`id`, `item_name`, `quantity`, `price`, `item_type`,
 CREATE TABLE `inventory_check` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `item_id` INT NOT NULL,
+    `before_quantity` DECIMAL(10,2) DEFAULT NULL,
     `actual_quantity` DECIMAL(10,2) NOT NULL,
     `note` TEXT,
     `created_by` INT NOT NULL,

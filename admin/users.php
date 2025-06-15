@@ -76,7 +76,7 @@ $total = $db->selectOne(
 <body class="users-page">
     <div class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <div class="col-md-2 col-lg-2 px-0 sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
                 <div style="display:inline-block;vertical-align:middle;">
@@ -124,6 +124,12 @@ $total = $db->selectOne(
                         </a>
                     </li>
                     <li>
+                        <a href="bcpt.php">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Thống kê & Báo cáo</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>
@@ -138,7 +144,7 @@ $total = $db->selectOne(
                     <span>Đăng xuất</span>
                 </a>
             </div>
-        </aside>
+        </div>
         
         <!-- Main Content -->
         <main class="main-content">

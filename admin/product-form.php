@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <div class="col-md-2 col-lg-2 px-0 sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
                 <div style="display:inline-block;vertical-align:middle;">
@@ -179,6 +179,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </li>
                     <li>
+                        <a href="inventory.php">
+                            <i class="fas fa-warehouse"></i>
+                            <span>Quản lý kho</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="bcpt.php">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Thống kê & Báo cáo</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>
@@ -193,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span>Đăng xuất</span>
                 </a>
             </div>
-        </aside>
+        </div>
         
         <!-- Main Content -->
         <main class="main-content">

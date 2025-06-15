@@ -70,7 +70,7 @@ $user = getCurrentUser();
 <body>
 <div class="admin-container">
     <!-- Sidebar giống các trang admin khác -->
-    <aside class="sidebar">
+    <div class="col-md-2 col-lg-2 px-0 sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="../Assets/images/logo.png" alt="Logo" class="sidebar-logo" style="height:48px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">
             <div style="display:inline-block;vertical-align:middle;">
@@ -78,24 +78,67 @@ $user = getCurrentUser();
                 <p style="margin:0;">Admin Panel</p>
             </div>
         </div>
+        
         <nav class="sidebar-nav">
             <ul>
-                <li><a href="index.php"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-                <li><a href="products.php"><i class="fas fa-box"></i><span>Sản phẩm</span></a></li>
-                <li><a href="orders.php"><i class="fas fa-shopping-cart"></i><span>Đơn hàng</span></a></li>
-                <li><a href="users.php"><i class="fas fa-users"></i><span>Người dùng</span></a></li>
-                <li class="active"><a href="categories.php"><i class="fas fa-tags"></i><span>Danh mục</span></a></li>
-                <li><a href="inventory.php"><i class="fas fa-warehouse"></i><span>Quản lý kho</span></a></li>
-                <li><a href="settings.php"><i class="fas fa-cog"></i><span>Cài đặt</span></a></li>
+                <li>
+                    <a href="index.php">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="products.php">
+                        <i class="fas fa-box"></i>
+                        <span>Sản phẩm</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="orders.php">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Đơn hàng</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="users.php">
+                        <i class="fas fa-users"></i>
+                        <span>Người dùng</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="categories.php">
+                        <i class="fas fa-tags"></i>
+                        <span>Danh mục</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="inventory.php">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Quản lý kho</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="bcpt.php">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Thống kê & Báo cáo</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.php">
+                        <i class="fas fa-cog"></i>
+                        <span>Cài đặt</span>
+                    </a>
+                </li>
             </ul>
         </nav>
+        
         <div class="sidebar-footer">
             <a href="../api/auth/index.php?action=logout" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Đăng xuất</span>
             </a>
         </div>
-    </aside>
+    </div>
     <!-- Main Content -->
     <main class="main-content">
         <div class="content-inner">
