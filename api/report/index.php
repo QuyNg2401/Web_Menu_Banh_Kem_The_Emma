@@ -25,10 +25,15 @@ if ($action === 'summary') {
     $stmt2->execute();
     $product = $stmt2->get_result()->fetch_assoc();
 
-    // Tổng chi phí
-    $sql3 = "SELECT COALESCE(SUM(price),0) as total_cost
-             FROM inventory_in
-             WHERE MONTH(created_at) = ? AND YEAR(created_at) = YEAR(CURDATE())";
+    // Tổng chi phí dựa vào xuất kho (kiểm kho)
+    $sql3 = "SELECT 
+                SUM(ABS(ic.actual_quantity - ic.before_quantity) * ii.price) AS total_cost
+             FROM inventory_check ic
+             JOIN inventory_in ii ON ic.item_id = ii.id
+             WHERE 
+                MONTH(ic.created_at) = ? 
+                AND YEAR(ic.created_at) = YEAR(CURDATE())
+                AND ic.actual_quantity < ic.before_quantity";
     $stmt3 = $conn->prepare($sql3);
     $stmt3->bind_param("i", $value);
     $stmt3->execute();
@@ -83,10 +88,16 @@ if ($action === 'revenue_chart') {
 
 // Biểu đồ chi phí
 if ($action === 'expense_chart') {
-    $sql = "SELECT item_type, SUM(price) as total
-            FROM inventory_in
-            WHERE MONTH(created_at) = ? AND YEAR(created_at) = YEAR(CURDATE())
-            GROUP BY item_type";
+    $sql = "SELECT 
+                ii.item_type,
+                SUM(ABS(ic.actual_quantity - ic.before_quantity) * ii.price) AS total_cost
+            FROM inventory_check ic
+            JOIN inventory_in ii ON ic.item_id = ii.id
+            WHERE 
+                MONTH(ic.created_at) = ? 
+                AND YEAR(ic.created_at) = YEAR(CURDATE())
+                AND ic.actual_quantity < ic.before_quantity
+            GROUP BY ii.item_type";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $value);
     $stmt->execute();
@@ -96,9 +107,9 @@ if ($action === 'expense_chart') {
     $packaging_cost = 0;
     while ($row = $result->fetch_assoc()) {
         if ($row['item_type'] === 'ingredient') {
-            $ingredients_cost = $row['total'];
+            $ingredients_cost = $row['total_cost'];
         } elseif ($row['item_type'] === 'packaging') {
-            $packaging_cost = $row['total'];
+            $packaging_cost = $row['total_cost'];
         }
     }
 

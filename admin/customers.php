@@ -10,7 +10,6 @@ $user = getCurrentUser();
 
 // Xử lý tìm kiếm và lọc
 $search = $_GET['search'] ?? '';
-$status = '';
 $page = max(1, intval($_GET['page'] ?? 1));
 $limit = 10;
 $offset = ($page - 1) * $limit;
@@ -20,33 +19,33 @@ $where = "WHERE 1=1";
 $params = [];
 
 if ($search) {
-    $where .= " AND (name LIKE ? OR email LIKE ? OR phone LIKE ?)";
+    $where .= " AND (c.name LIKE ? OR c.phone LIKE ? OR c.address LIKE ?)";
     $searchTerm = "%{$search}%";
     $params[] = $searchTerm;
     $params[] = $searchTerm;
     $params[] = $searchTerm;
 }
 
-// Đã xóa xử lý sắp xếp
-$orderBy = 'ORDER BY created_at DESC';
+// Bỏ cột created_at trong ORDER BY
+$orderBy = 'ORDER BY c.id DESC';
 
-// Lấy danh sách người dùng
-$users = $db->select(
-    "SELECT u.*, 
+// Lấy danh sách khách hàng
+$customers = $db->select(
+    "SELECT c.*, 
             COUNT(DISTINCT o.id) as total_orders,
             SUM(CASE WHEN o.status = 'completed' THEN o.total_amount ELSE 0 END) as total_spent
-     FROM users u
-     LEFT JOIN orders o ON u.id = o.customer_id
+     FROM customers c
+     LEFT JOIN orders o ON c.id = o.customer_id
      {$where}
-     GROUP BY u.id
+     GROUP BY c.id
      {$orderBy}
      LIMIT ? OFFSET ?",
     array_merge($params, [$limit, $offset])
 );
 
-// Lấy tổng số người dùng
+// Lấy tổng số khách hàng
 $total = $db->selectOne(
-    "SELECT COUNT(*) as total FROM users {$where}",
+    "SELECT COUNT(*) as total FROM customers c {$where}",
     $params
 )['total'];
 ?>
@@ -55,13 +54,13 @@ $total = $db->selectOne(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý nhân viên - <?php echo SITE_NAME; ?></title>
+    <title>Quản lý khách hàng - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../Assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .role-badge {
             display: inline-block;
-            background: #e74c3c;
+            background: #3498db;
             color: #fff;
             border-radius: 16px;
             padding: 4px 14px;
@@ -73,7 +72,7 @@ $total = $db->selectOne(
         }
     </style>
 </head>
-<body class="users-page">
+<body class="customers-page">
     <div class="admin-container">
         <!-- Sidebar -->
         <div class="col-md-2 col-lg-2 px-0 sidebar" id="sidebar">
@@ -105,13 +104,13 @@ $total = $db->selectOne(
                             <span>Đơn hàng</span>
                         </a>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href="users.php">
                             <i class="fas fa-users"></i>
                             <span>Nhân viên</span>
                         </a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="customers.php">
                             <i class="fas fa-user"></i>
                             <span>Khách hàng</span>
@@ -157,7 +156,7 @@ $total = $db->selectOne(
             <header class="main-header">
                 <div class="header-left">
                     <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>Quản lý nhân viên</h2>
+                    <h2>Quản lý khách hàng</h2>
                 </div>
                 
                 <div class="header-right">
@@ -174,55 +173,41 @@ $total = $db->selectOne(
                     <div class="filters-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; margin-bottom: 18px;">
                         <form action="" method="GET" class="filter-form" style="flex:1; min-width:220px;">
                             <div class="form-group" style="margin-bottom:0;">
-                                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm nhân viên...">
+                                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm khách hàng...">
                             </div>
                         </form>
-                        <a href="user-form.php" class="btn-add" style="white-space:nowrap;"> <i class="fas fa-plus"></i> Thêm nhân viên </a>
                     </div>
                     
-                    <!-- Users Table -->
+                    <!-- Customers Table -->
                     <div class="table-responsive">
                         <table class="custom-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Thông tin</th>
-                                    <th>Vai trò</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($users as $u): ?>
+                                <?php foreach ($customers as $c): ?>
                                 <tr>
-                                    <td><?php echo $u['id']; ?></td>
+                                    <td><?php echo $c['id']; ?></td>
                                     <td>
                                         <div class="user-info">
                                             <div class="user-details">
-                                                <div class="user-name"><?php echo htmlspecialchars($u['name']); ?></div>
+                                                <div class="user-name"><?php echo htmlspecialchars($c['name']); ?></div>
                                                 <div class="user-contact">
-                                                    <span><i class="fas fa-envelope"></i> <?php echo $u['email']; ?></span>
-                                                    <?php if (!empty($u['phone'])): ?>
-                                                    <span><i class="fas fa-phone"></i> <?php echo $u['phone']; ?></span>
-                                                    <?php endif; ?>
+                                                    <span><i class="fas fa-phone"></i> <?php echo $c['phone']; ?></span>
+                                                    <span><i class="fas fa-map-marker-alt"></i> <?php echo $c['address']; ?></span>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="role-badge <?php echo $u['role']; ?>">
-                                            <?php echo $u['role'] === 'admin' ? 'Quản trị viên' : 'Nhân viên'; ?>
-                                        </span>
-                                    </td>
-                                    <td>
                                         <div class="action-buttons">
-                                            <a href="user-form.php?id=<?php echo $u['id']; ?>" class="btn-edit" title="Sửa">
-                                                <i class="fas fa-edit"></i>
+                                            <a href="customer_detail.php?id=<?php echo $c['id']; ?>" class="btn btn-view btn-sm">
+                                                <i class="fas fa-eye"></i>
                                             </a>
-                                            <?php if ($u['id'] !== $user['id']): ?>
-                                            <button class="btn-delete" data-id="<?php echo $u['id']; ?>" data-type="users" title="Xóa">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>

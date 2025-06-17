@@ -169,7 +169,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <li>
                         <a href="users.php">
                             <i class="fas fa-users"></i>
-                            <span>Người dùng</span>
+                            <span>Nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="customers.php">
+                            <i class="fas fa-user"></i>
+                            <span>Khách hàng</span>
                         </a>
                     </li>
                     <li>

@@ -24,6 +24,32 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `customers`
+--
+
+CREATE TABLE `customers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `phone` (`phone`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Đang đổ dữ liệu cho bảng `customers`
+--
+
+INSERT INTO `customers` (`name`, `phone`, `address`) VALUES
+('Khách hàng 1', '0123456785', '123 Đường ABC, Quận 1, TP.HCM'),
+('Khách hàng 2', '0123456786', '456 Đường XYZ, Quận 2, TP.HCM'),
+('Khách hàng 3', '0123456787', '789 Đường DEF, Quận 3, TP.HCM'),
+('Khách hàng 4', '0123456788', '321 Đường GHI, Quận 4, TP.HCM'),
+('Khách hàng 5', '0123456789', '654 Đường KLM, Quận 5, TP.HCM');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `users`
 --
 
@@ -34,7 +60,7 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `role` enum('admin','user') DEFAULT 'user',
   `phone` varchar(20) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `hourly_rate` decimal(10,2) DEFAULT 0.00,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -43,8 +69,12 @@ CREATE TABLE `users` (
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `created_at`) VALUES
-(1, 'Admin', 'admin@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'admin', '0123456789', '2025-06-06 04:22:22');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `hourly_rate`) VALUES
+(1, 'Admin', 'admin@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'admin', '0123456789', 0.00),
+(2, 'Nhân viên 1', 'nv1@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456781', 50000.00),
+(3, 'Nhân viên 2', 'nv2@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456782', 45000.00),
+(4, 'Nhân viên 3', 'nv3@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456783', 48000.00),
+(5, 'Nhân viên 4', 'nv4@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456784', 52000.00);
 
 -- --------------------------------------------------------
 
@@ -106,27 +136,25 @@ INSERT INTO `products` (`id`, `name`, `price`, `description`, `image`, `status`,
 
 CREATE TABLE IF NOT EXISTS `orders` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `user_id` INT NOT NULL,
+  `customer_id` INT NOT NULL,
   `order_code` VARCHAR(50),
-  `customer_name` VARCHAR(100),
-  `customer_phone` VARCHAR(20),
-  `customer_email` VARCHAR(100),
   `payment_method` VARCHAR(50),
   `total_amount` DECIMAL(10,2) NOT NULL,
   `status` VARCHAR(50) NOT NULL,
   `notes` TEXT DEFAULT NULL,
   `shipping_address` VARCHAR(255) DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `order_code`, `customer_name`, `customer_phone`, `customer_email`, `payment_method`, `total_amount`, `status`, `notes`, `shipping_address`, `created_at`, `updated_at`) VALUES
-(1, 1, 'DH0001', 'Admin', '0123456789', 'admin@theemma.com', 'cod', 700000, 'pending', 'Giao hàng trong giờ hành chính', '123 Đường ABC, Quận 1, TP.HCM', NOW(), NOW()),
-(2, 1, 'DH0002', 'Admin', '0123456789', 'admin@theemma.com', 'cod', 355000, 'completed', 'Khách nhận sau 18h', '456 Đường XYZ, Quận 3, TP.HCM', NOW(), NOW());
+INSERT INTO `orders` (`id`, `customer_id`, `order_code`, `payment_method`, `total_amount`, `status`, `notes`, `shipping_address`, `created_at`, `updated_at`) VALUES
+(1, 1, 'DH0001', 'cod', 700000, 'pending', 'Giao hàng trong giờ hành chính', '123 Đường ABC, Quận 1, TP.HCM', NOW(), NOW()),
+(2, 2, 'DH0002', 'cod', 355000, 'completed', 'Khách nhận sau 18h', '456 Đường XYZ, Quận 2, TP.HCM', NOW(), NOW());
 
 -- --------------------------------------------------------
 
@@ -244,6 +272,18 @@ CREATE TABLE `inventory_check` (
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`item_id`) REFERENCES `inventory_in`(`id`),
     FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+-- Cấu trúc bảng cho bảng `attendance`
+--
+CREATE TABLE IF NOT EXISTS `attendance` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `date` DATE NOT NULL,
+  `checked_at` DATETIME NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  UNIQUE KEY `user_date` (`user_id`, `date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;

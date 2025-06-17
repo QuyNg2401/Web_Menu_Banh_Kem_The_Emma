@@ -298,7 +298,13 @@ foreach ($rows as $row) {
                     <li>
                         <a href="users.php">
                             <i class="fas fa-users"></i>
-                            <span>Người dùng</span>
+                            <span>Nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="customers.php">
+                            <i class="fas fa-user"></i>
+                            <span>Khách hàng</span>
                         </a>
                     </li>
                     <li>
@@ -307,6 +313,7 @@ foreach ($rows as $row) {
                             <span>Danh mục</span>
                         </a>
                     </li>
+                    
                     <li class="active">
                         <a href="inventory.php">
                             <i class="fas fa-warehouse"></i>

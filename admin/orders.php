@@ -57,9 +57,11 @@ $orderBy = match($sort) {
 // Lấy danh sách đơn hàng
 $orders = $db->select(
     "SELECT o.*, 
+            c.name as customer_name,
             COUNT(oi.id) as total_items,
             GROUP_CONCAT(p.name SEPARATOR ', ') as product_names
      FROM orders o 
+     LEFT JOIN customers c ON o.customer_id = c.id
      LEFT JOIN order_items oi ON o.id = oi.order_id
      LEFT JOIN products p ON oi.product_id = p.id
      {$where}
@@ -122,7 +124,13 @@ $total = $db->selectOne(
                     <li>
                         <a href="users.php">
                             <i class="fas fa-users"></i>
-                            <span>Người dùng</span>
+                            <span>Nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="customers.php">
+                            <i class="fas fa-user"></i>
+                            <span>Khách hàng</span>
                         </a>
                     </li>
                     <li>

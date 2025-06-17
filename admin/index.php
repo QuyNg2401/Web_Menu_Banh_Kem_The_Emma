@@ -18,9 +18,9 @@ $stats = [
 
 // Lấy đơn hàng mới nhất
 $latestOrders = $db->select(
-    "SELECT o.*, u.name as customer_name 
+    "SELECT o.*, c.name as customer_name 
     FROM orders o 
-    LEFT JOIN users u ON o.user_id = u.id 
+    LEFT JOIN customers c ON o.customer_id = c.id 
     ORDER BY o.created_at DESC 
     LIMIT 5"
 );
@@ -105,7 +105,13 @@ $topProducts = $db->select(
                     <li>
                         <a href="users.php">
                             <i class="fas fa-users"></i>
-                            <span>Người dùng</span>
+                            <span>Nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="customers.php">
+                            <i class="fas fa-user"></i>
+                            <span>Khách hàng</span>
                         </a>
                     </li>
                     <li>

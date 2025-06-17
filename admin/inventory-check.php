@@ -156,7 +156,7 @@ $items = $db->select("
                     <li>
                         <a href="users.php">
                             <i class="fas fa-users"></i>
-                            <span>Người dùng</span>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
                     <li>
@@ -181,6 +181,12 @@ $items = $db->select("
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="customers.php">
+                            <i class="fas fa-user"></i>
+                            <span>Khách hàng</span>
                         </a>
                     </li>
                 </ul>
