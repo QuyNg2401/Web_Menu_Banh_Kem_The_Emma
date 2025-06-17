@@ -139,20 +139,21 @@ $user = getCurrentUser();
             </a>
         </div>
     </div>
-    <!-- Main Content -->
+    <!-- Main Content -->-
     <main class="main-content">
+        <header class="main-header">
+            <div class="header-left">
+                <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                <h2>Quản lý danh mục</h2>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <span><?php echo $user['name']; ?></span>
+                </div>
+            </div>
+        </header>
         <div class="content-inner">
-            <header class="main-header">
-                <div class="header-left">
-                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>Quản lý danh mục</h2>
-                </div>
-                <div class="header-right">
-                    <div class="user-menu">
-                        <span><?php echo $user['name']; ?></span>
-                    </div>
-                </div>
-            </header>
+            
             <div class="content-wrapper">
                 <div class="form-container" style="max-width: 500px; margin-bottom: 32px;">
                     <h3><?php echo $action === 'edit' ? 'Sửa' : 'Thêm'; ?> danh mục</h3>

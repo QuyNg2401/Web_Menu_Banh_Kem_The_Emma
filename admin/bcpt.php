@@ -16,6 +16,7 @@ $user = getCurrentUser();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
     <link rel="stylesheet" href="../Assets/css/admin.css">
     <link rel="stylesheet" href="../Assets/css/bcpt.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -92,7 +93,7 @@ $user = getCurrentUser();
                 </div>
             </aside>
 
-            <div class="col-md-10 col-lg-10 p-4">
+            <div class="col-md-10 col-lg-10 p-4 main-content">
                 <header class="main-header">
                     <div class="header-left">
                         <button class="menu-toggle">
@@ -108,37 +109,31 @@ $user = getCurrentUser();
                 </header>
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="d-flex">
+                    <div class="d-flex align-items-center">
                         <button class="btn btn-primary me-2" id="exportExcel">
                             <i class="fas fa-file-excel me-2"></i>Xuất Excel
                         </button>
-                        <button class="btn btn-secondary" id="printReport">
+                        <button class="btn btn-secondary me-2" id="printReport">
                             <i class="fas fa-print me-2"></i>In báo cáo
                         </button>
                     </div>
+                    <select id="monthSelect" class="form-select" style="width: 200px; display: inline-block;">
+                        <option value="1">Tháng 1</option>
+                        <option value="2">Tháng 2</option>
+                        <option value="3">Tháng 3</option>
+                        <option value="4">Tháng 4</option>
+                        <option value="5">Tháng 5</option>
+                        <option value="6">Tháng 6</option>
+                        <option value="7">Tháng 7</option>
+                        <option value="8">Tháng 8</option>
+                        <option value="9">Tháng 9</option>
+                        <option value="10">Tháng 10</option>
+                        <option value="11">Tháng 11</option>
+                        <option value="12">Tháng 12</option>
+                    </select>
                 </div>
 
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex">
-                                <button class="btn btn-primary time-filter me-2 active" data-period="today">Hôm nay</button>
-                                <button class="btn btn-primary time-filter me-2" data-period="yesterday">Hôm qua</button>
-                                <button class="btn btn-primary time-filter me-2" data-period="week">7 ngày qua</button>
-                                <button class="btn btn-primary time-filter me-2" data-period="month">Tháng này</button>
-                                <button class="btn btn-primary time-filter me-2" data-period="custom">Tùy chỉnh</button>
-                            </div>
-                            <div class="date-range-container" style="display: none;">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="dateRangePicker" placeholder="Chọn khoảng thời gian">
-                                    <button class="btn bg-primary" id="applyDateRange"><i class="fas fa-check"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-4">
+                <div class="dashboard-cards">
                     <div class="col-md-3">
                         <div class="card card-metric card-revenue">
                             <div class="card-body d-flex justify-content-between align-items-center">
@@ -185,12 +180,12 @@ $user = getCurrentUser();
                         <div class="card card-metric card-inventory">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6 class="text-white mb-1">Tổng kho</h6>
-                                    <h3 class="mb-0 text-white" id="inventoryCount">0</h3>
+                                    <h6 class="text-white mb-1">Tổng chi phí</h6>
+                                    <h3 class="mb-0 text-white" id="inventoryCount">0đ</h3>
                                     <small class="trend-up" id="inventoryTrend"><i class="fas fa-arrow-up me-1"></i>0% so với kỳ trước</small>
                                 </div>
                                 <div class="metric-icon">
-                                    <i class="fas fa-boxes"></i>
+                                    <i class="fas fa-money-bill-wave"></i>
                                 </div>
                             </div>
                         </div>
@@ -202,11 +197,6 @@ $user = getCurrentUser();
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 text-white">Biểu đồ doanh thu</h5>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-primary active chart-type" data-type="daily">Theo ngày</button>
-                                    <button class="btn btn-primary chart-type" data-type="weekly">Theo tuần</button>
-                                    <button class="btn btn-primary chart-type" data-type="monthly">Theo tháng</button>
-                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="chart-container">
@@ -221,97 +211,22 @@ $user = getCurrentUser();
                                 <h5 class="mb-0 text-white">Chi phí</h5>
                             </div>
                             <div class="card-body">
-                                <form id="expenseForm">
-                                    <div class="mb-3">
-                                        <label for="expenseType" class="form-label">Loại chi phí</label>
-                                        <select class="form-select" id="expenseType" name="expenseType">
-                                            <option value="">Chọn loại chi phí</option>
-                                            <option value="electric">Điện</option>
-                                            <option value="water">Nước</option>
-                                            <option value="internet">Internet</option>
-                                            <option value="rent">Thuê mặt bằng</option>
-                                            <option value="other">Khác</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="expenseAmount" class="form-label">Số tiền (VNĐ)</label>
-                                        <input type="number" class="form-control" id="expenseAmount" name="expenseAmount" min="0" placeholder="Nhập số tiền">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="expenseNote" class="form-label">Ghi chú</label>
-                                        <input type="text" class="form-control" id="expenseNote" name="expenseNote" placeholder="Ghi chú thêm (nếu có)">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Lưu chi phí</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="viewOrderModal" tabindex="-1" aria-labelledby="viewOrderModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewOrderModalLabel">Chi tiết đơn hàng</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header bg-light">
-                                    <h6 class="mb-0"><i class="fas fa-user me-2"></i>Thông tin khách hàng</h6>
+                                <div class="chart-container" style="position: relative; height:300px;">
+                                    <canvas id="expenseChart"></canvas>
                                 </div>
-                                <div class="card-body">
-                                    <p><strong>Khách hàng:</strong> <span id="orderCustomerName"></span></p>
-                                    <p><strong>Số điện thoại:</strong> <span id="orderCustomerPhone"></span></p>
-                                    <p><strong>Email:</strong> <span id="orderCustomerEmail"></span></p>
-                                    <p><strong>Địa chỉ:</strong> <span id="orderCustomerAddress"></span></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header bg-light">
-                                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Thông tin đơn hàng</h6>
-                                </div>
-                                <div class="card-body">
-                                    <p><strong>Mã đơn hàng:</strong> <span id="orderId"></span></p>
-                                    <p><strong>Ngày đặt hàng:</strong> <span id="orderDate"></span></p>
-                                    <p><strong>Phương thức thanh toán:</strong> <span id="orderPaymentMethod"></span></p>
-                                    <p><strong>Trạng thái:</strong> <span id="orderStatus"></span></p>
+                                <div class="expense-legend mt-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span><i class="fas fa-circle text-info"></i> Tiền nguyên liệu</span>
+                                        <span class="expense-amount">0đ</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-circle" style="color: #6f42c1;"></i> Tiền vật phẩm đóng gói</span>
+                                        <span class="expense-amount">0đ</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="card mb-4">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Chi tiết sản phẩm</h6>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-bordered mb-0" id="orderItemsTable">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Sản phẩm</th>
-                                            <th>Đơn giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Thành tiền</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="orderItemsBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn bg-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>
@@ -330,6 +245,174 @@ $user = getCurrentUser();
                 sidebar.classList.remove('active');
             }
         }
+    });
+
+    // Hàm format số tiền
+    function formatCurrency(amount) {
+        return Number(amount).toLocaleString('vi-VN') + 'đ';
+    }
+
+    // Hàm tính phần trăm thay đổi
+    function calculateChange(current, previous) {
+        if (previous === 0) return 0;
+        return ((current - previous) / previous * 100).toFixed(1);
+    }
+
+    // Hàm cập nhật xu hướng
+    function updateTrend(element, change) {
+        const trendElement = element.nextElementSibling;
+        if (change > 0) {
+            trendElement.innerHTML = `<i class="fas fa-arrow-up me-1"></i>${change}% so với kỳ trước`;
+            trendElement.className = 'trend-up';
+        } else if (change < 0) {
+            trendElement.innerHTML = `<i class="fas fa-arrow-down me-1"></i>${Math.abs(change)}% so với kỳ trước`;
+            trendElement.className = 'trend-down';
+        } else {
+            trendElement.innerHTML = `<i class="fas fa-minus me-1"></i>0% so với kỳ trước`;
+            trendElement.className = 'trend-neutral';
+        }
+    }
+
+    // Hàm lấy dữ liệu tổng quan
+    function loadSummary(period, value) {
+        fetch(`../api/report/index.php?action=summary&period=${period}&value=${value}`)
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    const data = res.data;
+                    const prevData = res.previous_data;
+
+                    // Cập nhật doanh thu
+                    document.getElementById('totalRevenue').textContent = formatCurrency(data.total_revenue);
+                    updateTrend(
+                        document.getElementById('totalRevenue'),
+                        calculateChange(data.total_revenue, prevData.total_revenue)
+                    );
+
+                    // Cập nhật số đơn hàng
+                    document.getElementById('orderCount').textContent = data.order_count;
+                    updateTrend(
+                        document.getElementById('orderCount'),
+                        calculateChange(data.order_count, prevData.order_count)
+                    );
+
+                    // Cập nhật số sản phẩm
+                    document.getElementById('productCount').textContent = data.product_count;
+                    updateTrend(
+                        document.getElementById('productCount'),
+                        calculateChange(data.product_count, prevData.product_count)
+                    );
+
+                    // Cập nhật chi phí
+                    document.getElementById('inventoryCount').textContent = formatCurrency(data.total_cost);
+                    updateTrend(
+                        document.getElementById('inventoryCount'),
+                        calculateChange(data.total_cost, prevData.total_cost)
+                    );
+                }
+            })
+            .catch(error => console.error('Error loading summary:', error));
+    }
+
+    let revenueChartInstance = null;
+    let expenseChartInstance = null;
+
+    function loadRevenueChart(value) {
+        fetch(`../api/report/index.php?action=revenue_chart&value=${value}`)
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    const ctx = document.getElementById('revenueChart').getContext('2d');
+                    // Xóa biểu đồ cũ nếu có
+                    if (revenueChartInstance) {
+                        revenueChartInstance.destroy();
+                    }
+                    revenueChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: res.data.labels,
+                            datasets: [{
+                                label: 'Doanh thu',
+                                data: res.data.values,
+                                borderColor: '#4CAF50',
+                                backgroundColor: 'rgba(76, 175, 80, 0.15)',
+                                tension: 0.1,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error loading revenue chart:', error));
+    }
+
+    function loadExpenseChart(value) {
+        fetch(`../api/report/index.php?action=expense_chart&value=${value}`)
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    const ctx = document.getElementById('expenseChart').getContext('2d');
+                    // Xóa biểu đồ cũ nếu có
+                    if (expenseChartInstance) {
+                        expenseChartInstance.destroy();
+                    }
+                    expenseChartInstance = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Tiền nguyên liệu', 'Tiền vật phẩm đóng gói'],
+                            datasets: [{
+                                data: [res.data.ingredients_cost, res.data.packaging_cost],
+                                backgroundColor: ['#17a2b8', '#6f42c1']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+
+                    // Cập nhật legend
+                    document.querySelectorAll('.expense-amount')[0].textContent = formatCurrency(res.data.ingredients_cost);
+                    document.querySelectorAll('.expense-amount')[1].textContent = formatCurrency(res.data.packaging_cost);
+                }
+            })
+            .catch(error => console.error('Error loading expense chart:', error));
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const monthSelect = document.getElementById('monthSelect');
+        if (monthSelect) {
+            // Đặt giá trị mặc định là tháng hiện tại
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            monthSelect.value = currentMonth;
+
+            // Load dữ liệu ban đầu
+            loadSummary('month', currentMonth);
+            loadRevenueChart(currentMonth);
+            loadExpenseChart(currentMonth);
+
+            // Xử lý sự kiện thay đổi tháng
+            monthSelect.addEventListener('change', function() {
+                const selectedMonth = this.value;
+                loadSummary('month', selectedMonth);
+                loadRevenueChart(selectedMonth);
+                loadExpenseChart(selectedMonth);
+            });
+        }
+    });
+
+    document.getElementById('exportExcel').addEventListener('click', function() {
+        const month = document.getElementById('monthSelect').value;
+        window.open(`../api/report/export_excel.php?month=${month}`, '_blank');
+    });
+
+    document.getElementById('printReport').addEventListener('click', function() {
+        window.print();
     });
     </script>
 </body>

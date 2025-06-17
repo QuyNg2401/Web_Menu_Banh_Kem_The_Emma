@@ -209,19 +209,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         <!-- Main Content -->
         <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2><?php echo $id ? 'Sửa' : 'Thêm'; ?> sản phẩm</h2>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-menu">
+                        <span><?php echo $user['name']; ?></span>
+                    </div>
+                </div>
+            </header>
             <div class="content-inner">
-                <header class="main-header">
-                    <div class="header-left">
-                        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                        <h2><?php echo $id ? 'Sửa' : 'Thêm'; ?> sản phẩm</h2>
-                    </div>
-                    
-                    <div class="header-right">
-                        <div class="user-menu">
-                            <span><?php echo $user['name']; ?></span>
-                        </div>
-                    </div>
-                </header>
+
                 
                 <div class="content-wrapper">
                     <?php if ($success): ?>
@@ -314,7 +315,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <span>Ảnh hiện tại</span>
                                 </div>
                                 <?php endif; ?>
-                                <input type="file" id="image" name="image" accept="image/*">
+                                <input style="background-color: #fff;" type="file" id="image" name="image" accept="image/*">
                                 <?php if (isset($errors['image'])): ?>
                                 <span class="error"><?php echo $errors['image']; ?></span>
                                 <?php endif; ?>

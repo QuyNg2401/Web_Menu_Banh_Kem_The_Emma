@@ -129,3 +129,10 @@ define('PAYMENT_METHODS', [
     'momo' => 'Ví MoMo',
     'zalopay' => 'Ví ZaloPay'
 ]);
+
+// Khởi tạo kết nối MySQLi cho các API sử dụng MySQLi
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+if ($conn->connect_error) {
+    die("Kết nối MySQLi thất bại: " . $conn->connect_error);
+}
+$conn->set_charset("utf8mb4");

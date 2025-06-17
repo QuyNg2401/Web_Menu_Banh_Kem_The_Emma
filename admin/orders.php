@@ -162,19 +162,20 @@ $total = $db->selectOne(
         
         <!-- Main Content -->
         <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>Quản lý đơn hàng</h2>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-menu">
+                        <span><?php echo $user['name']; ?></span>
+                    </div>
+                </div>
+            </header>
             <div class="content-inner">
-                <header class="main-header">
-                    <div class="header-left">
-                        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                        <h2>Quản lý đơn hàng</h2>
-                    </div>
-                    
-                    <div class="header-right">
-                        <div class="user-menu">
-                            <span><?php echo $user['name']; ?></span>
-                        </div>
-                    </div>
-                </header>
+                
                 
                 <div class="content-wrapper">
                     <!-- Filters -->

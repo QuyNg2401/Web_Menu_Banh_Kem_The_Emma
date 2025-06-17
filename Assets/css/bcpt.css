@@ -1,6 +1,5 @@
 /* Main Content */
 .col-md-10 {
-    margin-left: 250px;
     transition: all 0.3s;
 }
 
@@ -17,27 +16,32 @@
 }
 
 .card-revenue {
-    background: linear-gradient(45deg, #2196F3, #1976D2);
-    color: white;
+    background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+    color: #222;
 }
 
 .card-orders {
-    background: linear-gradient(45deg, #FFA726, #FB8C00);
-    color: #fff;
+    background: linear-gradient(135deg, #ffb6b9 0%, #ffe0ec 100%);
+    color: #222;
 }
 
 .card-products {
-    background: linear-gradient(45deg, #FFC107, #FFA000);
-    color: white;
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    color: #222;
+}
+
+.card-customers {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: #222;
 }
 
 .card-inventory {
-    background: linear-gradient(45deg, #ec4899, #be185d);
-    color: #fff;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: #222;
 }
 
-.card-inventory .metric-icon {
-    color: #fff;
+.card-metric .metric-icon {
+    color: #222;
 }
 
 .card-header{
@@ -81,6 +85,11 @@
     border-color: var(--primary-color);
 }
 
+.time-filter.active {
+    background: #CFA44E;
+    color: #222;
+}
+
 /* Trends */
 .trend-up {
     color: #28a745;
@@ -108,16 +117,6 @@
         overflow: hidden;
     }
 }
-
-/* Date Range Picker */
-.date-range-container {
-    position: relative;
-}
-
-.date-range-container .input-group {
-    width: auto;
-}
-
 /* Modal */
 .modal-xl {
     max-width: 90%;
@@ -161,7 +160,7 @@
     padding: 8px 20px;
     transition: background 0.2s, color 0.2s;
 }
-.btn-primary:hover, .btn-primary:focus {
+.btn-primary:hover {
     background: #cfa44e;
     color: #fff;
 }
@@ -179,8 +178,34 @@
     background: #222;
     color: #fff;
 }
-.btn.time-filter.active, 
-.time-filter.active , .btn-primary.active{
+.btn-primary.active {
     background: #CFA44E;
-    color: var(--secondary-color);
+    color: #222;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+@media (max-width: 900px) {
+    .dashboard-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard-cards .col-md-3 {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    flex: unset;
 }
