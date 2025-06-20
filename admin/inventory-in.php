@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $itemType = $_POST['item_type'];
         $itemName = $_POST['item_name'];
         $quantity = $_POST['quantity'];
+        $unit = $_POST['unit'] ?? null;
         $price = $_POST['price'];
         $notes = $_POST['notes'];
         
@@ -24,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'item_type' => $itemType,
             'item_name' => $itemName,
             'quantity' => $quantity,
+            'unit' => $unit,
             'price' => $price,
             'notes' => $notes,
             'created_by' => $user['id'],
@@ -139,6 +141,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </li>
                     <li>
+                        <a href="categories.php">
+                            <i class="fas fa-tags"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="products.php">
                             <i class="fas fa-box"></i>
                             <span>Sản phẩm</span>
@@ -151,15 +159,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </li>
                     <li>
+                        <a href="customers.php">
+                            <i class="fas fa-user"></i>
+                            <span>Khách hàng</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="users.php">
                             <i class="fas fa-users"></i>
                             <span>Nhân viên</span>
                         </a>
                     </li>
                     <li>
-                        <a href="categories.php">
-                            <i class="fas fa-tags"></i>
-                            <span>Danh mục</span>
+                        <a href="attendance.php">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Chấm công</span>
                         </a>
                     </li>
                     <li class="active">
@@ -178,12 +192,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>Cài đặt</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="customers.php">
-                            <i class="fas fa-user"></i>
-                            <span>Khách hàng</span>
                         </a>
                     </li>
                 </ul>
@@ -231,6 +239,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label>Số lượng</label>
                         <input type="number" name="quantity" class="form-control" required min="0" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="unit">Đơn vị tính</label>
+                        <input type="text" id="unit" name="unit" class="form-control" placeholder="kg, gram, cái, hộp,...">
                     </div>
                     
                     <div class="form-group">
@@ -314,5 +327,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     });
     </script>
+
+    <?php if (!empty($_SESSION['success'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['success']); ?>", "success");
+    </script>
+    <?php unset($_SESSION['success']); endif; ?>
+
+    <?php if (!empty($_SESSION['error'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['error']); ?>", "error");
+    </script>
+    <?php unset($_SESSION['error']); endif; ?>
 </body>
 </html> 

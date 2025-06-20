@@ -240,6 +240,7 @@ CREATE TABLE `inventory_in` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `item_name` VARCHAR(100) NOT NULL,
     `quantity` DECIMAL(10,2) NOT NULL,
+    `unit` VARCHAR(50) DEFAULT NULL,
     `price` DECIMAL(15,2) DEFAULT 0,
     `item_type` VARCHAR(50) DEFAULT NULL,
     `notes` TEXT,
@@ -250,11 +251,11 @@ CREATE TABLE `inventory_in` (
 
 -- Đang đổ dữ liệu cho bảng `inventory_in`
 
-INSERT INTO `inventory_in` (`id`, `item_name`, `quantity`, `price`, `item_type`, `notes`, `created_by`, `created_at`) VALUES
-(1, 'Bột mì', 50, 100000, 'ingredient', 'Nhập nguyên liệu làm bánh', 1, NOW()),
-(2, 'Đường', 30, 50000, 'ingredient', 'Nguyên liệu cơ bản', 1, NOW()),
-(3, 'Hộp giấy', 100, 20000, 'packaging', 'Hộp đựng bánh size lớn', 1, NOW()),
-(4, 'Túi nilon', 200, 10000, 'packaging', 'Túi đựng bánh nhỏ', 1, NOW());
+INSERT INTO `inventory_in` (`id`, `item_name`, `quantity`, `unit`, `price`, `item_type`, `notes`, `created_by`, `created_at`) VALUES
+(1, 'Bột mì', 50, 'kg', 100000, 'ingredient', 'Nhập nguyên liệu làm bánh', 1, NOW()),
+(2, 'Đường', 30, 'kg', 50000, 'ingredient', 'Nguyên liệu cơ bản', 1, NOW()),
+(3, 'Hộp giấy', 100, 'cái', 20000, 'packaging', 'Hộp đựng bánh size lớn', 1, NOW()),
+(4, 'Túi nilon', 200, 'cái', 10000, 'packaging', 'Túi đựng bánh nhỏ', 1, NOW());
 
 -- --------------------------------------------------------
 
@@ -284,6 +285,20 @@ CREATE TABLE IF NOT EXISTS `attendance` (
   `checked_at` DATETIME NOT NULL,
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   UNIQUE KEY `user_date` (`user_id`, `date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+-- Cấu trúc bảng cho bảng `attendance_details`
+--
+CREATE TABLE IF NOT EXISTS `attendance_details` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `date` DATE NOT NULL,
+  `weekday` TINYINT NOT NULL, -- 1=Thứ 2, ..., 7=Chủ nhật
+  `time_from` TIME NOT NULL,
+  `time_to` TIME NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 COMMIT;

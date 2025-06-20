@@ -17,9 +17,9 @@ if (!$id) {
 
 // Lấy thông tin đơn hàng
 $order = $db->selectOne(
-    "SELECT o.*, u.name as user_name, u.email as user_email, u.phone as user_phone
+    "SELECT o.*, u.name as customer_name, u.phone as customer_phone, u.address as customer_address
      FROM orders o
-     LEFT JOIN users u ON o.user_id = u.id
+     LEFT JOIN customers u ON o.customer_id = u.id
      WHERE o.id = ?",
     [$id]
 );
@@ -88,6 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </li>
                     <li>
+                        <a href="categories.php">
+                            <i class="fas fa-tags"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="products.php">
                             <i class="fas fa-box"></i>
                             <span>Sản phẩm</span>
@@ -100,21 +106,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </li>
                     <li>
-                        <a href="users.php">
-                            <i class="fas fa-users"></i>
-                            <span>Nhân viên</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="customers.php">
                             <i class="fas fa-user"></i>
                             <span>Khách hàng</span>
                         </a>
                     </li>
                     <li>
-                        <a href="categories.php">
-                            <i class="fas fa-tags"></i>
-                            <span>Danh mục</span>
+                        <a href="users.php">
+                            <i class="fas fa-users"></i>
+                            <span>Nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="attendance.php">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Chấm công</span>
                         </a>
                     </li>
                     <li>
@@ -227,25 +233,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <h3>Thông tin khách hàng</h3>
                                 <div class="info-grid">
                                     <div class="info-item">
-                                        <label>Họ tên:</label>
-                                        <span><?php echo htmlspecialchars($order['customer_name']); ?></span>
+                                        <label>Khách hàng:</label>
+                                        <span><?php echo $order['customer_name']; ?></span>
                                     </div>
-                                    
                                     <div class="info-item">
                                         <label>Số điện thoại:</label>
                                         <span><?php echo $order['customer_phone']; ?></span>
                                     </div>
                                     
-                                    <?php if ($order['customer_email']): ?>
-                                    <div class="info-item">
-                                        <label>Email:</label>
-                                        <span><?php echo $order['customer_email']; ?></span>
-                                    </div>
-                                    <?php endif; ?>
-                                    
                                     <div class="info-item full-width">
                                         <label>Địa chỉ:</label>
-                                        <span><?php echo nl2br(htmlspecialchars($order['shipping_address'])); ?></span>
+                                        <span><?php echo nl2br(htmlspecialchars($order['customer_address'])); ?></span>
                                     </div>
                                 </div>
                             </div>

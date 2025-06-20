@@ -123,4 +123,39 @@ if ($action === 'expense_chart') {
     exit;
 }
 
+// Biểu đồ top sản phẩm bán chạy
+if ($action === 'top_products_chart') {
+    $sql = "SELECT p.name, SUM(oi.quantity) as total_quantity
+            FROM order_items oi
+            JOIN products p ON oi.product_id = p.id
+            JOIN orders o ON oi.order_id = o.id
+            WHERE o.status = 'completed' 
+            AND MONTH(o.created_at) = ? 
+            AND YEAR(o.created_at) = YEAR(CURDATE())
+            GROUP BY p.id, p.name
+            ORDER BY total_quantity DESC
+            LIMIT 10";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $value);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $labels = [];
+    $values = [];
+    while ($row = $result->fetch_assoc()) {
+        $labels[] = $row['name'];
+        $values[] = (int)$row['total_quantity'];
+    }
+
+    echo json_encode([
+        'success' => true,
+        'data' => [
+            'labels' => $labels,
+            'values' => $values
+        ]
+    ]);
+    exit;
+}
+
 echo json_encode(['success' => false, 'message' => 'Invalid action']); 

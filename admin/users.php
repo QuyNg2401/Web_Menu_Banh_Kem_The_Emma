@@ -49,6 +49,14 @@ $total = $db->selectOne(
     "SELECT COUNT(*) as total FROM users {$where}",
     $params
 )['total'];
+
+// Xử lý xóa nhân viên
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id'])) {
+    $db->delete('users', 'id = ?', [$_GET['id']]);
+    $_SESSION['success'] = 'Xóa nhân viên thành công!';
+    header('Location: users.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -70,6 +78,19 @@ $total = $db->selectOne(
             white-space: nowrap;
             line-height: 1.5;
             margin-top: 4px;
+        }
+        .btn-cancel {
+            background: #eee;
+            color: #333;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none !important;
+        }
+        #successModal .btn-submit {
+            min-width: 80px;
+            font-size: 1.08rem;
         }
     </style>
 </head>
@@ -94,6 +115,12 @@ $total = $db->selectOne(
                         </a>
                     </li>
                     <li>
+                        <a href="categories.php">
+                            <i class="fas fa-tags"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="products.php">
                             <i class="fas fa-box"></i>
                             <span>Sản phẩm</span>
@@ -105,6 +132,12 @@ $total = $db->selectOne(
                             <span>Đơn hàng</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="customers.php">
+                            <i class="fas fa-user"></i>
+                            <span>Khách hàng</span>
+                        </a>
+                    </li>
                     <li class="active">
                         <a href="users.php">
                             <i class="fas fa-users"></i>
@@ -112,15 +145,9 @@ $total = $db->selectOne(
                         </a>
                     </li>
                     <li>
-                        <a href="customers.php">
-                            <i class="fas fa-user"></i>
-                            <span>Khách hàng</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="categories.php">
-                            <i class="fas fa-tags"></i>
-                            <span>Danh mục</span>
+                        <a href="attendance.php">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Chấm công</span>
                         </a>
                     </li>
                     <li>
@@ -282,5 +309,88 @@ $total = $db->selectOne(
         }
     });
     </script>
+
+    <?php if (!empty($_SESSION['success'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['success']); ?>", "success");
+    </script>
+    <?php unset($_SESSION['success']); endif; ?>
+
+    <?php if (!empty($_SESSION['error'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['error']); ?>", "error");
+    </script>
+    <?php unset($_SESSION['error']); endif; ?>
+
+    <!-- Modal xác nhận xóa nhân viên -->
+    <div class="modal" id="deleteUserModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+        <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
+            <h3 style="margin-top:0;">Xác nhận xóa</h3>
+            <p>Bạn có chắc chắn muốn xóa nhân viên này không?</p>
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:18px;">
+                <button id="cancelDeleteUserBtn" class="btn-cancel">Hủy</button>
+                <button id="confirmDeleteUserBtn" class="btn-submit">Xóa</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal thông báo thành công -->
+    <div class="modal" id="successModal" style="display:none;position:fixed;z-index:10000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+        <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:350px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;text-align:center;">
+            <h3 style="margin-top:0;color:#28a745;"><i class="fas fa-check-circle"></i> Thành công</h3>
+            <div id="successModalMsg" style="margin:18px 0 12px 0;font-size:1.1rem;"></div>
+            <div style="display:flex;justify-content:center;margin-top:10px;">
+                <button id="closeSuccessModal" class="btn-submit">Đóng</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let deleteId = null;
+        const deleteModal = document.getElementById('deleteUserModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteUserBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteUserBtn');
+
+        document.querySelectorAll('.btn-delete[data-type="users"]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                deleteId = this.getAttribute('data-id');
+                deleteModal.style.display = 'flex';
+            });
+        });
+
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.onclick = function() {
+                deleteModal.style.display = 'none';
+                deleteId = null;
+            };
+        }
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.onclick = function() {
+                if (deleteId) {
+                    window.location.href = 'users.php?action=delete&id=' + deleteId;
+                }
+            };
+        }
+    });
+    </script>
+    <?php if (!empty($_SESSION['success'])): ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('successModal');
+        var msg = document.getElementById('successModalMsg');
+        var closeBtn = document.getElementById('closeSuccessModal');
+        if (modal && msg && closeBtn) {
+            msg.innerHTML = "<?php echo addslashes($_SESSION['success']); ?>";
+            modal.style.display = 'flex';
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            };
+            window.onclick = function(event) {
+                if (event.target === modal) modal.style.display = 'none';
+            };
+        }
+    });
+    </script>
+    <?php unset($_SESSION['success']); endif; ?>
 </body>
 </html> 

@@ -81,8 +81,9 @@ class Database {
         return $stmt->execute();
     }
     
-    public function delete($query, $params = []) {
-        $stmt = $this->pdo->prepare($query);
+    public function delete($table, $where, $params = []) {
+        $sql = "DELETE FROM `$table` WHERE $where";
+        $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($params);
     }
 }

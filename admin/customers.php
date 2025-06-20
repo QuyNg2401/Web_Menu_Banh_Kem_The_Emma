@@ -93,6 +93,12 @@ $total = $db->selectOne(
                         </a>
                     </li>
                     <li>
+                        <a href="categories.php">
+                            <i class="fas fa-tags"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="products.php">
                             <i class="fas fa-box"></i>
                             <span>Sản phẩm</span>
@@ -104,12 +110,6 @@ $total = $db->selectOne(
                             <span>Đơn hàng</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="users.php">
-                            <i class="fas fa-users"></i>
-                            <span>Nhân viên</span>
-                        </a>
-                    </li>
                     <li class="active">
                         <a href="customers.php">
                             <i class="fas fa-user"></i>
@@ -117,9 +117,15 @@ $total = $db->selectOne(
                         </a>
                     </li>
                     <li>
-                        <a href="categories.php">
-                            <i class="fas fa-tags"></i>
-                            <span>Danh mục</span>
+                        <a href="users.php">
+                            <i class="fas fa-users"></i>
+                            <span>Nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="attendance.php">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Chấm công</span>
                         </a>
                     </li>
                     <li>
@@ -267,5 +273,17 @@ $total = $db->selectOne(
         }
     });
     </script>
+
+    <?php if (!empty($_SESSION['success'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['success']); ?>", "success");
+    </script>
+    <?php unset($_SESSION['success']); endif; ?>
+
+    <?php if (!empty($_SESSION['error'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['error']); ?>", "error");
+    </script>
+    <?php unset($_SESSION['error']); endif; ?>
 </body>
 </html> 

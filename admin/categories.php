@@ -10,13 +10,39 @@ $name = '';
 $errors = [];
 $success = '';
 
-// Thêm danh mục
-if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+// AJAX add category
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_add_category'])) {
+    $name = trim($_POST['name'] ?? '');
+    if (empty($name)) {
+        echo json_encode(['success' => false, 'message' => 'Vui lòng nhập tên danh mục.']);
+    } else {
+        // Lấy id lớn nhất hiện tại
+        $maxId = $db->selectOne('SELECT MAX(id) as max_id FROM categories');
+        $nextId = $maxId && $maxId['max_id'] ? $maxId['max_id'] + 1 : 1;
+        // Chèn thủ công id
+        $db->insert('categories', [
+            'id' => $nextId,
+            'name' => $name,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+        echo json_encode(['success' => true, 'message' => 'Thêm danh mục thành công!']);
+    }
+    exit;
+}
+
+// Thêm danh mục (luôn cho phép khi POST và không phải edit/delete)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action !== 'edit' && $action !== 'delete') {
     $name = trim($_POST['name'] ?? '');
     if ($name === '') {
         $errors[] = 'Vui lòng nhập tên danh mục.';
     } else {
+        // Lấy id lớn nhất hiện tại
+        $maxId = $db->selectOne('SELECT MAX(id) as max_id FROM categories');
+        $nextId = $maxId && $maxId['max_id'] ? $maxId['max_id'] + 1 : 1;
+        // Chèn thủ công id
         $db->insert('categories', [
+            'id' => $nextId,
             'name' => $name,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
@@ -50,12 +76,13 @@ if ($action === 'edit' && $id) {
 // Xóa danh mục
 if ($action === 'delete' && $id) {
     $db->delete('categories', 'id = ?', [$id]);
+    $_SESSION['success'] = 'Xóa danh mục thành công!';
     header('Location: categories.php');
     exit;
 }
 
 // Lấy danh sách danh mục
-$categories = $db->select('SELECT * FROM categories ORDER BY created_at DESC');
+$categories = $db->select('SELECT * FROM categories ORDER BY id ASC');
 $user = getCurrentUser();
 ?>
 <!DOCTYPE html>
@@ -66,6 +93,35 @@ $user = getCurrentUser();
     <title>Quản lý danh mục - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../Assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        #addCategoryAlert .alert { padding: 10px 15px; margin-bottom: 15px; border-radius: 5px; text-align: center; }
+        #addCategoryAlert .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        #addCategoryAlert .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .btn-cancel {
+            background: #eee;
+            color: #333;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none !important;
+        }
+        .modal-action-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .modal-action-row .btn-cancel, .modal-action-row .btn-submit {
+            min-width: 80px;
+            font-size: 1.08rem;
+        }
+        #successModal .btn-submit {
+            min-width: 80px;
+            font-size: 1.08rem;
+        }
+    </style>
 </head>
 <body>
 <div class="admin-container">
@@ -87,6 +143,12 @@ $user = getCurrentUser();
                         <span>Dashboard</span>
                     </a>
                 </li>
+                <li class="active">
+                    <a href="categories.php">
+                        <i class="fas fa-tags"></i>
+                        <span>Danh mục</span>
+                    </a>
+                </li>
                 <li>
                     <a href="products.php">
                         <i class="fas fa-box"></i>
@@ -100,21 +162,21 @@ $user = getCurrentUser();
                     </a>
                 </li>
                 <li>
+                    <a href="customers.php">
+                        <i class="fas fa-user"></i>
+                        <span>Khách hàng</span>
+                    </a>
+                </li>
+                <li>
                     <a href="users.php">
                         <i class="fas fa-users"></i>
                         <span>Nhân viên</span>
                     </a>
                 </li>
                 <li>
-                    <a href="customers.php">
-                        <i class="fas fa-user"></i>
-                        <span>Khách hàng</span>
-                    </a>
-                </li>
-                <li class="active">
-                    <a href="categories.php">
-                        <i class="fas fa-tags"></i>
-                        <span>Danh mục</span>
+                    <a href="attendance.php">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Chấm công</span>
                     </a>
                 </li>
                 <li>
@@ -159,29 +221,30 @@ $user = getCurrentUser();
             </div>
         </header>
         <div class="content-inner">
-            
             <div class="content-wrapper">
-                <div class="form-container" style="max-width: 500px; margin-bottom: 32px;">
-                    <h3><?php echo $action === 'edit' ? 'Sửa' : 'Thêm'; ?> danh mục</h3>
-                    <?php if ($success): ?><div class="alert alert-success"><?php echo $success; ?></div><?php endif; ?>
-                    <?php if ($errors): ?><div class="alert alert-danger"><?php echo implode('<br>', $errors); ?></div><?php endif; ?>
-                    <form method="POST">
-                        <div class="form-group">
-                            <label for="name">Tên danh mục</label>
-                            <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($name); ?>" required>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn-submit">
-                                <i class="fas fa-save"></i> <?php echo $action === 'edit' ? 'Cập nhật' : 'Thêm mới'; ?>
-                            </button>
-                            <?php if ($action === 'edit'): ?>
-                            <a href="categories.php" class="btn-cancel"><i class="fas fa-times"></i> Hủy</a>
-                            <?php endif; ?>
-                        </div>
-                    </form>
+                <button class="btn-submit" id="openAddCategoryModal" style="margin-bottom: 18px;"><i class="fas fa-plus"></i> Thêm danh mục</button>
+                
+                <!-- Modal Thêm danh mục -->
+                <div class="modal" id="addCategoryModal" tabindex="-1" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+                    <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
+                        <button id="closeAddCategoryModal" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.7rem;color:#888;cursor:pointer;z-index:2;">&times;</button>
+                        <h3 style="margin-top:0;">Thêm danh mục</h3>
+                        <div id="addCategoryAlert"></div>
+                        <form id="addCategoryForm" autocomplete="off">
+                            <div class="form-group">
+                                <label for="modal_category_name">Tên danh mục</label>
+                                <input type="text" id="modal_category_name" name="name" class="form-control" required>
+                            </div>
+                            <div class="form-actions" style="margin-top:18px;">
+                                <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Thêm mới</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
+                <!-- Kết thúc modal -->
+
                 <div class="table-responsive">
-                    <table>
+                    <table class="custom-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -199,7 +262,7 @@ $user = getCurrentUser();
                                 <td>
                                     <div class="action-buttons">
                                         <a href="categories.php?action=edit&id=<?php echo $cat['id']; ?>" class="btn-edit" title="Sửa"><i class="fas fa-edit"></i></a>
-                                        <a href="categories.php?action=delete&id=<?php echo $cat['id']; ?>" class="btn-delete" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa?');"><i class="fas fa-trash"></i></a>
+                                        <a href="#" class="btn-delete" data-id="<?php echo $cat['id']; ?>" title="Xóa"><i class="fas fa-trash"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -211,22 +274,174 @@ $user = getCurrentUser();
         </div>
     </main>
 </div>
+<!-- Modal xác nhận xóa danh mục -->
+<div class="modal" id="deleteCategoryModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+    <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
+        <h3 style="margin-top:0;">Xác nhận xóa</h3>
+        <p>Bạn có chắc chắn muốn xóa danh mục này không?</p>
+        <div class="modal-action-row">
+            <button id="cancelDeleteBtn" class="btn-cancel">Hủy</button>
+            <button id="confirmDeleteBtn" class="btn-submit">Xóa</button>
+        </div>
+    </div>
+</div>
+<!-- Modal thông báo thành công -->
+<div class="modal" id="successModal" style="display:none;position:fixed;z-index:10000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+    <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:350px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;text-align:center;">
+        <h3 style="margin-top:0;color:#28a745;"><i class="fas fa-check-circle"></i> Thành công</h3>
+        <div id="successModalMsg" style="margin:18px 0 12px 0;font-size:1.1rem;"></div>
+        <div style="display:flex;justify-content:center;margin-top:10px;">
+            <button id="closeSuccessModal" class="btn-submit">Đóng</button>
+        </div>
+    </div>
+</div>
 <script src="../Assets/js/admin.js"></script>
 <script>
-// Responsive sidebar giống index.php
-const menuToggle = document.querySelector('.menu-toggle');
-const sidebar = document.querySelector('.sidebar');
-menuToggle && menuToggle.addEventListener('click', function() {
-    sidebar.classList.toggle('active');
-});
-// Đóng sidebar khi click ra ngoài (mobile)
-document.addEventListener('click', function(e) {
-    if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
-        if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-            sidebar.classList.remove('active');
+document.addEventListener('DOMContentLoaded', function() {
+    // Responsive sidebar giống index.php
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    menuToggle && menuToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+    });
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1024 && sidebar.classList.contains('active')) {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
         }
+    });
+
+    // Modal logic
+    const openBtn = document.getElementById('openAddCategoryModal');
+    const modal = document.getElementById('addCategoryModal');
+    const closeBtn = document.getElementById('closeAddCategoryModal');
+
+    if(openBtn && modal && closeBtn) {
+        openBtn.onclick = () => { 
+            modal.style.display = 'flex'; 
+            document.getElementById('addCategoryAlert').innerHTML = ''; 
+            document.getElementById('addCategoryForm').reset(); 
+        };
+        closeBtn.onclick = () => { modal.style.display = 'none'; };
+        window.onclick = function(event) { if (event.target === modal) modal.style.display = 'none'; };
+    }
+
+    // AJAX submit
+    const addCategoryForm = document.getElementById('addCategoryForm');
+    addCategoryForm.onsubmit = function(e) {
+        e.preventDefault();
+        const formData = new FormData(addCategoryForm);
+        formData.append('ajax_add_category', 1);
+        fetch('categories.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            const alertDiv = document.getElementById('addCategoryAlert');
+            if (data.success) {
+                alertDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i> ' + data.message + '</div>';
+                addCategoryForm.reset();
+                setTimeout(() => { modal.style.display = 'none'; location.reload(); }, 1200);
+            } else {
+                alertDiv.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> ' + data.message + '</div>';
+            }
+        })
+        .catch(() => {
+            document.getElementById('addCategoryAlert').innerHTML = '<div class="alert alert-danger">Lỗi kết nối máy chủ!</div>';
+        });
+    };
+
+    var categoryForm = document.getElementById('categoryForm');
+    if (categoryForm) {
+        categoryForm.addEventListener('submit', function(e) {
+            // Chỉ xử lý AJAX cho form thêm mới (không có action=edit)
+            if (this.action.includes('action=edit')) {
+                return;
+            }
+            
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('ajax_add_category', '1');
+            
+            fetch('categories.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Reset form và reload trang sau 1s
+                    document.getElementById('categoryForm').reset();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Lỗi kết nối máy chủ!', 'error');
+            });
+        });
+    }
+
+    // Modal xác nhận xóa danh mục
+    let deleteId = null;
+    const deleteModal = document.getElementById('deleteCategoryModal');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            deleteId = this.getAttribute('data-id');
+            deleteModal.style.display = 'flex';
+        });
+    });
+
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.onclick = function() {
+            deleteModal.style.display = 'none';
+            deleteId = null;
+        };
+    }
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.onclick = function() {
+            if (deleteId) {
+                window.location.href = 'categories.php?action=delete&id=' + deleteId;
+            }
+        };
     }
 });
 </script>
+<?php if (!empty($_SESSION['success'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var modal = document.getElementById('successModal');
+    var msg = document.getElementById('successModalMsg');
+    var closeBtn = document.getElementById('closeSuccessModal');
+    if (modal && msg && closeBtn) {
+        msg.innerHTML = "<?php echo addslashes($_SESSION['success']); ?>";
+        modal.style.display = 'flex';
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        };
+        window.onclick = function(event) {
+            if (event.target === modal) modal.style.display = 'none';
+        };
+    }
+});
+</script>
+<?php unset($_SESSION['success']); endif; ?>
+
+<?php if (!empty($_SESSION['error'])): ?>
+<script>
+    showNotification("<?php echo addslashes($_SESSION['error']); ?>", "error");
+</script>
+<?php unset($_SESSION['error']); endif; ?>
 </body>
 </html> 

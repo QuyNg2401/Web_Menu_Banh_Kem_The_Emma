@@ -41,6 +41,12 @@ $user = getCurrentUser();
                             </a>
                         </li>
                         <li>
+                            <a href="categories.php">
+                                <i class="fas fa-tags"></i>
+                                <span>Danh mục</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="products.php">
                                 <i class="fas fa-box"></i>
                                 <span>Sản phẩm</span>
@@ -53,27 +59,27 @@ $user = getCurrentUser();
                             </a>
                         </li>
                         <li>
+                            <a href="customers.php">
+                                <i class="fas fa-user"></i>
+                                <span>Khách hàng</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="users.php">
                                 <i class="fas fa-users"></i>
                                 <span>Nhân viên</span>
                             </a>
                         </li>
                         <li>
-                            <a href="categories.php">
-                                <i class="fas fa-tags"></i>
-                                <span>Danh mục</span>
+                            <a href="attendance.php">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Chấm công</span>
                             </a>
                         </li>
                         <li>
                             <a href="inventory.php">
                                 <i class="fas fa-warehouse"></i>
                                 <span>Quản lý kho</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="customers.php">
-                                <i class="fas fa-user"></i>
-                                <span>Khách hàng</span>
                             </a>
                         </li>
                         <li class="active">
@@ -199,7 +205,7 @@ $user = getCurrentUser();
                 </div>
 
                 <div class="row mb-4">
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 text-white">Biểu đồ doanh thu</h5>
@@ -211,7 +217,22 @@ $user = getCurrentUser();
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0 text-white">Sản phẩm bán chạy</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="position: relative; height:300px;">
+                                    <canvas id="topProductsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="card">
                             <div class="card-header ">
                                 <h5 class="mb-0 text-white">Chi phí</h5>
@@ -322,6 +343,7 @@ $user = getCurrentUser();
 
     let revenueChartInstance = null;
     let expenseChartInstance = null;
+    let topProductsChartInstance = null;
 
     function loadRevenueChart(value) {
         fetch(`../api/report/index.php?action=revenue_chart&value=${value}`)
@@ -354,6 +376,45 @@ $user = getCurrentUser();
                 }
             })
             .catch(error => console.error('Error loading revenue chart:', error));
+    }
+
+    function loadTopProductsChart(value) {
+        fetch(`../api/report/index.php?action=top_products_chart&value=${value}`)
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    const ctx = document.getElementById('topProductsChart').getContext('2d');
+                    if (topProductsChartInstance) {
+                        topProductsChartInstance.destroy();
+                    }
+                    topProductsChartInstance = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: res.data.labels,
+                            datasets: [{
+                                label: 'Số lượng bán',
+                                data: res.data.values,
+                                backgroundColor: [
+                                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                                    '#FF9F40', '#E7E9ED', '#8DDF3C', '#F38181', '#30E3CA'
+                                ],
+                                hoverOffset: 4,
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                }
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error loading top products chart:', error));
     }
 
     function loadExpenseChart(value) {
@@ -401,6 +462,7 @@ $user = getCurrentUser();
             loadSummary('month', currentMonth);
             loadRevenueChart(currentMonth);
             loadExpenseChart(currentMonth);
+            loadTopProductsChart(currentMonth);
 
             // Xử lý sự kiện thay đổi tháng
             monthSelect.addEventListener('change', function() {
@@ -408,6 +470,7 @@ $user = getCurrentUser();
                 loadSummary('month', selectedMonth);
                 loadRevenueChart(selectedMonth);
                 loadExpenseChart(selectedMonth);
+                loadTopProductsChart(selectedMonth);
             });
         }
     });

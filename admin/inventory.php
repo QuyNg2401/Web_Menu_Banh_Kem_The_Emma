@@ -284,6 +284,12 @@ foreach ($rows as $row) {
                         </a>
                     </li>
                     <li>
+                        <a href="categories.php">
+                            <i class="fas fa-tags"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="products.php">
                             <i class="fas fa-box"></i>
                             <span>Sản phẩm</span>
@@ -296,24 +302,23 @@ foreach ($rows as $row) {
                         </a>
                     </li>
                     <li>
-                        <a href="users.php">
-                            <i class="fas fa-users"></i>
-                            <span>Nhân viên</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="customers.php">
                             <i class="fas fa-user"></i>
                             <span>Khách hàng</span>
                         </a>
                     </li>
                     <li>
-                        <a href="categories.php">
-                            <i class="fas fa-tags"></i>
-                            <span>Danh mục</span>
+                        <a href="users.php">
+                            <i class="fas fa-users"></i>
+                            <span>Nhân viên</span>
                         </a>
                     </li>
-                    
+                    <li>
+                        <a href="attendance.php">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Chấm công</span>
+                        </a>
+                    </li>
                     <li class="active">
                         <a href="inventory.php">
                             <i class="fas fa-warehouse"></i>
@@ -405,6 +410,7 @@ foreach ($rows as $row) {
                                 <th>Tên vật phẩm</th>
                                 <th>Giá tiền</th>
                                 <th>Số lượng</th>
+                                <th>Đơn vị</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -414,6 +420,7 @@ foreach ($rows as $row) {
                                 <td><?php echo htmlspecialchars($transaction['item_name']); ?></td>
                                 <td><?php echo number_format($transaction['price']); ?> VNĐ</td>
                                 <td><?php echo (intval($transaction['quantity']) == $transaction['quantity']) ? intval($transaction['quantity']) : $transaction['quantity']; ?></td>
+                                <td><?php echo htmlspecialchars($transaction['unit']); ?></td>
                                 <td>
                                     <a href="#" class="btn-view" title="Xem chi tiết" onclick='showDetails(<?php echo json_encode([
                                         "item_id" => $transaction["id"],
@@ -505,5 +512,16 @@ foreach ($rows as $row) {
     // Đưa dữ liệu lịch sử kiểm kho sang JS
     window.inventoryCheckHistory = <?php echo json_encode($inventoryCheckHistory); ?>;
     </script>
+    <?php if (!empty($_SESSION['success'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['success']); ?>", "success");
+    </script>
+    <?php unset($_SESSION['success']); endif; ?>
+
+    <?php if (!empty($_SESSION['error'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['error']); ?>", "error");
+    </script>
+    <?php unset($_SESSION['error']); endif; ?>
 </body>
 </html> 

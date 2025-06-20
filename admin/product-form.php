@@ -154,6 +154,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="categories.php">
+                            <i class="fas fa-tags"></i>
+                            <span>Danh mục</span>
+                        </a>
+                    </li>
                     <li class="active">
                         <a href="products.php">
                             <i class="fas fa-box"></i>
@@ -167,21 +173,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     </li>
                     <li>
-                        <a href="users.php">
-                            <i class="fas fa-users"></i>
-                            <span>Nhân viên</span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="customers.php">
                             <i class="fas fa-user"></i>
                             <span>Khách hàng</span>
                         </a>
                     </li>
                     <li>
-                        <a href="categories.php">
-                            <i class="fas fa-tags"></i>
-                            <span>Danh mục</span>
+                        <a href="users.php">
+                            <i class="fas fa-users"></i>
+                            <span>Nhân viên</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="attendance.php">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Chấm công</span>
                         </a>
                     </li>
                     <li>
