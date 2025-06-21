@@ -86,6 +86,18 @@ class Database {
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute($params);
     }
+    
+    public function beginTransaction() {
+        return $this->pdo->beginTransaction();
+    }
+    
+    public function commit() {
+        return $this->pdo->commit();
+    }
+    
+    public function rollback() {
+        return $this->pdo->rollBack();
+    }
 }
 
 // Khởi tạo kết nối database

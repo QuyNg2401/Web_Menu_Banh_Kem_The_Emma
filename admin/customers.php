@@ -70,6 +70,12 @@ $total = $db->selectOne(
             line-height: 1.5;
             margin-top: 4px;
         }
+        .status-pending { background:#ffc107; color:#000; padding:4px 8px; border-radius:4px; font-size:12px; }
+        .status-processing { background:#17a2b8; color:#fff; padding:4px 8px; border-radius:4px; font-size:12px; }
+        .status-completed { background:#28a745; color:#fff; padding:4px 8px; border-radius:4px; font-size:12px; }
+        .status-cancelled { background:#dc3545; color:#fff; padding:4px 8px; border-radius:4px; font-size:12px; }
+        .modal-view-btn { background:#007bff; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:12px; transition:background 0.2s; }
+        .modal-view-btn:hover { background:#0056b3; cursor:pointer; }
     </style>
 </head>
 <body class="customers-page">
@@ -211,7 +217,7 @@ $total = $db->selectOne(
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="customer_detail.php?id=<?php echo $c['id']; ?>" class="btn btn-view btn-sm">
+                                            <a href="#" onclick="showCustomerHistory(<?php echo $c['id']; ?>, '<?php echo htmlspecialchars($c['name']); ?>')" class="btn btn-view btn-sm">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </div>
@@ -257,6 +263,19 @@ $total = $db->selectOne(
         </main>
     </div>
     
+    <!-- Modal Lịch sử mua hàng -->
+    <div id="customerHistoryModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+        <div style="background:#fff;padding:24px;border-radius:12px;max-width:95vw;width:800px;max-height:90vh;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
+                <h3 style="margin:0;font-size:1.3rem;color:#333;" id="modalTitle">Lịch sử mua hàng</h3>
+                <button onclick="closeCustomerHistoryModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#666;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;">&times;</button>
+            </div>
+            <div id="customerHistoryContent">
+                <!-- Nội dung sẽ được load bằng AJAX -->
+            </div>
+        </div>
+    </div>
+    
     <script src="../Assets/js/admin.js"></script>
     <script>
     const menuToggle = document.querySelector('.menu-toggle');
@@ -270,6 +289,141 @@ $total = $db->selectOne(
             if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
                 sidebar.classList.remove('active');
             }
+        }
+    });
+
+    // Hàm hiển thị modal lịch sử mua hàng
+    function showCustomerHistory(customerId, customerName) {
+        document.getElementById('modalTitle').textContent = `Lịch sử mua hàng - ${customerName}`;
+        document.getElementById('customerHistoryModal').style.display = 'flex';
+        
+        // Load dữ liệu lịch sử mua hàng
+        loadCustomerHistory(customerId);
+    }
+
+    // Hàm đóng modal
+    function closeCustomerHistoryModal() {
+        document.getElementById('customerHistoryModal').style.display = 'none';
+    }
+
+    // Hàm load lịch sử mua hàng bằng AJAX
+    function loadCustomerHistory(customerId) {
+        const contentDiv = document.getElementById('customerHistoryContent');
+        contentDiv.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin" style="font-size:24px;color:#666;"></i><br>Đang tải...</div>';
+        
+        fetch(`../api/customers/get-history.php?customer_id=${customerId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayCustomerHistory(data.orders, data.customer);
+                } else {
+                    contentDiv.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">Không thể tải dữ liệu</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                contentDiv.innerHTML = '<div style="text-align:center;padding:20px;color:#666;">Có lỗi xảy ra khi tải dữ liệu</div>';
+            });
+    }
+
+    // Hàm hiển thị lịch sử mua hàng
+    function displayCustomerHistory(orders, customer) {
+        const contentDiv = document.getElementById('customerHistoryContent');
+        
+        let html = `
+            <div style="margin-bottom:20px;padding:15px;background:#f8f9fa;border-radius:8px;">
+                <h4 style="margin:0 0 10px 0;color:#333;">Thông tin khách hàng</h4>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px;">
+                    <div><strong>Tên:</strong> ${customer.name}</div>
+                    <div><strong>SĐT:</strong> ${customer.phone}</div>
+                    <div style="grid-column:1/-1;"><strong>Địa chỉ:</strong> ${customer.address}</div>
+                </div>
+            </div>
+        `;
+        
+        if (orders.length > 0) {
+            html += `
+                <h4 style="margin:20px 0 15px 0;color:#333;">Lịch sử đơn hàng (${orders.length} đơn)</h4>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                        <thead>
+                            <tr style="background:#f8f9fa;">
+                                <th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Mã đơn</th>
+                                <th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Ngày đặt</th>
+                                <th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Tổng tiền</th>
+                                <th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Trạng thái</th>
+                                <th style="padding:10px;text-align:left;border-bottom:1px solid #ddd;">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            orders.forEach(order => {
+                const statusClass = getStatusClass(order.status);
+                html += `
+                    <tr>
+                        <td style="padding:10px;border-bottom:1px solid #eee;">${order.order_code}</td>
+                        <td style="padding:10px;border-bottom:1px solid #eee;">${formatDate(order.created_at)}</td>
+                        <td style="padding:10px;border-bottom:1px solid #eee;">${formatCurrency(order.total_amount)}</td>
+                        <td style="padding:10px;border-bottom:1px solid #eee;"><span class="${statusClass}">${getStatusText(order.status)}</span></td>
+                        <td style="padding:10px;border-bottom:1px solid #eee;">
+                            <button onclick="showOrderDetails(${order.id})" class="modal-view-btn">Xem</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } else {
+            html += '<div style="text-align:center;padding:20px;color:#666;">Khách hàng chưa có đơn hàng nào</div>';
+        }
+        
+        contentDiv.innerHTML = html;
+    }
+
+    // Hàm hỗ trợ
+    function getStatusClass(status) {
+        const classes = {
+            'pending': 'status-pending',
+            'processing': 'status-processing', 
+            'completed': 'status-completed',
+            'cancelled': 'status-cancelled'
+        };
+        return classes[status] || 'status-pending';
+    }
+
+    function getStatusText(status) {
+        const texts = {
+            'pending': 'Chờ xử lý',
+            'processing': 'Đang xử lý',
+            'completed': 'Hoàn thành',
+            'cancelled': 'Đã hủy'
+        };
+        return texts[status] || status;
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+    }
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(amount);
+    }
+
+    function showOrderDetails(orderId) {
+        // Có thể mở modal chi tiết đơn hàng ở đây
+        alert('Chi tiết đơn hàng ' + orderId);
+    }
+
+    // Đóng modal khi click bên ngoài
+    document.getElementById('customerHistoryModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeCustomerHistoryModal();
         }
     });
     </script>

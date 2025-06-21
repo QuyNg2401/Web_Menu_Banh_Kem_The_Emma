@@ -35,12 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+// Lấy danh sách vật phẩm trong kho (chưa bị xóa)
+$inventoryItems = $db->select("SELECT id, item_name, quantity, unit FROM inventory_in WHERE isDeleted = 0 ORDER BY item_name ASC");
+
 // Lấy danh sách vật phẩm trong kho, kèm lần kiểm kho gần nhất
 $items = $db->select("
     SELECT inventory_in.*, 
         (SELECT actual_quantity FROM inventory_check WHERE item_id = inventory_in.id ORDER BY created_at DESC LIMIT 1) as last_actual_quantity,
         (SELECT MAX(created_at) FROM inventory_check WHERE item_id = inventory_in.id) as last_check
     FROM inventory_in
+    WHERE inventory_in.isDeleted = 0
     ORDER BY inventory_in.item_name ASC
 ");
 ?>
@@ -119,6 +123,11 @@ $items = $db->select("
                 gap: 4px;
             }
         }
+        .back-link { margin-left:12px; white-space:nowrap; display:inline-flex; align-items:center; text-decoration:none; color:var(--primary-color); transition:color 0.2s; }
+        .back-link .fa-arrow-left { transition: transform 0.2s; color: var(--primary-color); }
+        .back-link:hover { color:var(--primary-color); }
+        .back-link:hover span { text-decoration: underline; }
+        .back-link:hover .fa-arrow-left { transform: translateX(-6px); }
     </style>
 </head>
 <body>
@@ -224,6 +233,7 @@ $items = $db->select("
             </header>
             
             <div class="dashboard">
+                <a href="inventory.php" class="back-link"><i class="fas fa-arrow-left" style="margin-right:6px;"></i><span>Quay lại</span></a>
                 <div class="table-responsive">
                     <table class="custom-table">
                         <thead>

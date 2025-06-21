@@ -61,6 +61,7 @@ CREATE TABLE `users` (
   `role` enum('admin','user') DEFAULT 'user',
   `phone` varchar(20) DEFAULT NULL,
   `hourly_rate` decimal(10,2) DEFAULT 0.00,
+  `isDeleted` TINYINT(1) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -69,12 +70,12 @@ CREATE TABLE `users` (
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `hourly_rate`) VALUES
-(1, 'Admin', 'admin@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'admin', '0123456789', 0.00),
-(2, 'Nhân viên 1', 'nv1@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456781', 50000.00),
-(3, 'Nhân viên 2', 'nv2@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456782', 45000.00),
-(4, 'Nhân viên 3', 'nv3@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456783', 48000.00),
-(5, 'Nhân viên 4', 'nv4@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456784', 52000.00);
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `hourly_rate`, `isDeleted`) VALUES
+(1, 'Admin', 'admin@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'admin', '0123456789', 0.00, 0),
+(2, 'Nhân viên 1', 'nv1@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456781', 50000.00, 0),
+(3, 'Nhân viên 2', 'nv2@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456782', 45000.00, 0),
+(4, 'Nhân viên 3', 'nv3@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456783', 48000.00, 0),
+(5, 'Nhân viên 4', 'nv4@theemma.com', '$2y$10$N.VdieKrRFTjQ0kBes3RJ.2ei1sUzA8qnbLn9qMwXM7QWsYwOemQO', 'user', '0123456784', 52000.00, 0);
 
 -- --------------------------------------------------------
 
@@ -116,17 +117,18 @@ CREATE TABLE IF NOT EXISTS `products` (
   `status` ENUM('active','inactive') DEFAULT 'active',
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `category_id` INT
+  `category_id` INT,
+  `isDeleted` TINYINT(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `price`, `description`, `image`, `status`, `created_at`, `updated_at`, `category_id`) VALUES
-(1, 'Bánh kem socola', 350000, 'Bánh kem socola thơm ngon', 'banhkem1.jpg', 'active', NOW(), NOW(), 1),
-(2, 'Bánh kem dâu tây', 355000, 'Bánh kem dâu tây tươi', 'banhkem2.jpg', 'active', NOW(), NOW(), 1),
-(3, 'Bánh kem matcha', 340000, 'Bánh kem vị matcha Nhật Bản', 'banhkem3.jpg', 'active', NOW(), NOW(), 2);
+INSERT INTO `products` (`id`, `name`, `price`, `description`, `image`, `status`, `created_at`, `updated_at`, `category_id`, `isDeleted`) VALUES
+(1, 'Bánh kem socola', 350000, 'Bánh kem socola thơm ngon', 'banhkem1.jpg', 'active', NOW(), NOW(), 1, 0),
+(2, 'Bánh kem dâu tây', 355000, 'Bánh kem dâu tây tươi', 'banhkem2.jpg', 'active', NOW(), NOW(), 1, 0),
+(3, 'Bánh kem matcha', 340000, 'Bánh kem vị matcha Nhật Bản', 'banhkem3.jpg', 'active', NOW(), NOW(), 2, 0);
 
 -- --------------------------------------------------------
 
@@ -145,6 +147,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `shipping_address` VARCHAR(255) DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `isDeleted` TINYINT(1) DEFAULT 0,
   FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -152,9 +155,9 @@ CREATE TABLE IF NOT EXISTS `orders` (
 -- Đang đổ dữ liệu cho bảng `orders`
 --
 
-INSERT INTO `orders` (`id`, `customer_id`, `order_code`, `payment_method`, `total_amount`, `status`, `notes`, `shipping_address`, `created_at`, `updated_at`) VALUES
-(1, 1, 'DH0001', 'cod', 700000, 'pending', 'Giao hàng trong giờ hành chính', '123 Đường ABC, Quận 1, TP.HCM', NOW(), NOW()),
-(2, 2, 'DH0002', 'cod', 355000, 'completed', 'Khách nhận sau 18h', '456 Đường XYZ, Quận 2, TP.HCM', NOW(), NOW());
+INSERT INTO `orders` (`id`, `customer_id`, `order_code`, `payment_method`, `total_amount`, `status`, `notes`, `shipping_address`, `created_at`, `updated_at`, `isDeleted`) VALUES
+(1, 1, 'DH0001', 'cod', 700000, 'pending', 'Giao hàng trong giờ hành chính', '123 Đường ABC, Quận 1, TP.HCM', NOW(), NOW(), 0),
+(2, 2, 'DH0002', 'cod', 355000, 'completed', 'Khách nhận sau 18h', '456 Đường XYZ, Quận 2, TP.HCM', NOW(), NOW(), 0);
 
 -- --------------------------------------------------------
 
@@ -192,16 +195,17 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `isDeleted` TINYINT(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `categories`
 --
 
-INSERT INTO `categories` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'Bánh kem truyền thống', NOW(), NOW()),
-(2, 'Bánh kem hiện đại', NOW(), NOW());
+INSERT INTO `categories` (`id`, `name`, `created_at`, `updated_at`, `isDeleted`) VALUES
+(1, 'Bánh kem truyền thống', NOW(), NOW(), 0),
+(2, 'Bánh kem hiện đại', NOW(), NOW(), 0);
 
 -- --------------------------------------------------------
 
@@ -245,17 +249,18 @@ CREATE TABLE `inventory_in` (
     `item_type` VARCHAR(50) DEFAULT NULL,
     `notes` TEXT,
     `created_by` INT,
+    `isDeleted` TINYINT(1) DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Đang đổ dữ liệu cho bảng `inventory_in`
 
-INSERT INTO `inventory_in` (`id`, `item_name`, `quantity`, `unit`, `price`, `item_type`, `notes`, `created_by`, `created_at`) VALUES
-(1, 'Bột mì', 50, 'kg', 100000, 'ingredient', 'Nhập nguyên liệu làm bánh', 1, NOW()),
-(2, 'Đường', 30, 'kg', 50000, 'ingredient', 'Nguyên liệu cơ bản', 1, NOW()),
-(3, 'Hộp giấy', 100, 'cái', 20000, 'packaging', 'Hộp đựng bánh size lớn', 1, NOW()),
-(4, 'Túi nilon', 200, 'cái', 10000, 'packaging', 'Túi đựng bánh nhỏ', 1, NOW());
+INSERT INTO `inventory_in` (`id`, `item_name`, `quantity`, `unit`, `price`, `item_type`, `notes`, `created_by`, `created_at`, `isDeleted`) VALUES
+(1, 'Bột mì', 50, 'kg', 100000, 'ingredient', 'Nhập nguyên liệu làm bánh', 1, NOW(), 0),
+(2, 'Đường', 30, 'kg', 50000, 'ingredient', 'Nguyên liệu cơ bản', 1, NOW(), 0),
+(3, 'Hộp giấy', 100, 'cái', 20000, 'packaging', 'Hộp đựng bánh size lớn', 1, NOW(), 0),
+(4, 'Túi nilon', 200, 'cái', 10000, 'packaging', 'Túi đựng bánh nhỏ', 1, NOW(), 0);
 
 -- --------------------------------------------------------
 

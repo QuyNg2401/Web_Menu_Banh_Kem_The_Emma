@@ -8,10 +8,18 @@ checkAuth();
 // Lấy thông tin người dùng
 $user = getCurrentUser();
 
+// Xử lý xóa vật phẩm
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id'])) {
+    $db->update('inventory_in', ['isDeleted' => 1], ['id' => $_GET['id']]);
+    $_SESSION['success'] = 'Xóa vật phẩm thành công!';
+    header('Location: inventory.php');
+    exit;
+}
+
 // Thống kê tổng số nguyên liệu nhập kho
-$total_ingredient = $db->selectOne("SELECT COUNT(DISTINCT item_name) as total FROM inventory_in WHERE item_type = 'ingredient'")['total'];
+$total_ingredient = $db->selectOne("SELECT COUNT(DISTINCT item_name) as total FROM inventory_in WHERE item_type = 'ingredient' AND isDeleted = 0")['total'];
 // Thống kê tổng số vật phẩm đóng gói nhập kho
-$total_packaging = $db->selectOne("SELECT COUNT(*) as total FROM inventory_in WHERE item_type = 'packaging'")['total'];
+$total_packaging = $db->selectOne("SELECT COUNT(*) as total FROM inventory_in WHERE item_type = 'packaging' AND isDeleted = 0")['total'];
 
 // Lấy lịch sử kiểm kho gần đây (luôn hiển thị tất cả vật phẩm trong kho, kể cả chưa kiểm kho)
 $recentTransactions = $db->select("
@@ -22,6 +30,7 @@ $recentTransactions = $db->select("
             SELECT item_id, MAX(created_at) FROM inventory_check GROUP BY item_id
         )
     ) ic ON ii.id = ic.item_id
+    WHERE ii.isDeleted = 0
     ORDER BY ii.created_at DESC
     LIMIT 10
 ");
@@ -261,6 +270,19 @@ foreach ($rows as $row) {
             color: #f7f7f7 !important;
             background:  #e74c3c !important;
         }
+        .btn-cancel {
+            background: #eee;
+            color: #333;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none !important;
+        }
+        #successModal .btn-submit {
+            min-width: 80px;
+            font-size: 1.08rem;
+        }
     </style>
 </head>
 <body>
@@ -431,7 +453,7 @@ foreach ($rows as $row) {
                                         "check_time" => $transaction["check_time"],
                                         "user_name" => $transaction["user_name"] ?? ""
                                     ]); ?>); return false;'><i class="fas fa-eye"></i></a>
-                                    <a href="#" class="btn-action btn-delete" title="Xóa"><i class="fas fa-trash"></i></a>
+                                    <a href="#" class="btn-delete" data-id="<?php echo $transaction['id']; ?>" data-type="inventory" title="Xóa"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -448,6 +470,29 @@ foreach ($rows as $row) {
             <button onclick="closeDetailModal()" class="modal-close-x" title="Đóng">&times;</button>
             <h3>Chi tiết vật phẩm</h3>
             <div id="modalDetailContent" class="modalDetailContent"></div>
+        </div>
+    </div>
+    
+    <!-- Modal xác nhận xóa -->
+    <div class="modal" id="deleteInventoryModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+        <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
+            <h3 style="margin-top:0;">Xác nhận xóa</h3>
+            <p>Bạn có chắc chắn muốn xóa vật phẩm này không?</p>
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:18px;">
+                <button id="cancelDeleteBtn" class="btn-cancel">Hủy</button>
+                <button id="confirmDeleteBtn" class="btn-submit">Xóa</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal thông báo thành công -->
+    <div class="modal" id="successModal" style="display:none;position:fixed;z-index:10000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+        <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:350px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;text-align:center;">
+            <h3 style="margin-top:0;color:#28a745;"><i class="fas fa-check-circle"></i> Thành công</h3>
+            <div id="successModalMsg" style="margin:18px 0 12px 0;font-size:1.1rem;"></div>
+            <div style="display:flex;justify-content:center;margin-top:10px;">
+                <button id="closeSuccessModal" class="btn-submit">Đóng</button>
+            </div>
         </div>
     </div>
     
@@ -507,6 +552,36 @@ foreach ($rows as $row) {
     function closeDetailModal() {
         document.getElementById('detailModal').classList.remove('active');
     }
+
+    // Modal xóa
+    document.addEventListener('DOMContentLoaded', function() {
+        let deleteId = null;
+        const deleteModal = document.getElementById('deleteInventoryModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        document.querySelectorAll('.btn-delete[data-type="inventory"]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                deleteId = this.getAttribute('data-id');
+                deleteModal.style.display = 'flex';
+            });
+        });
+
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.onclick = function() {
+                deleteModal.style.display = 'none';
+                deleteId = null;
+            };
+        }
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.onclick = function() {
+                if (deleteId) {
+                    window.location.href = 'inventory.php?action=delete&id=' + deleteId;
+                }
+            };
+        }
+    });
     </script>
     <script>
     // Đưa dữ liệu lịch sử kiểm kho sang JS
@@ -514,7 +589,21 @@ foreach ($rows as $row) {
     </script>
     <?php if (!empty($_SESSION['success'])): ?>
     <script>
-        showNotification("<?php echo addslashes($_SESSION['success']); ?>", "success");
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('successModal');
+        var msg = document.getElementById('successModalMsg');
+        var closeBtn = document.getElementById('closeSuccessModal');
+        if (modal && msg && closeBtn) {
+            msg.innerHTML = "<?php echo addslashes($_SESSION['success']); ?>";
+            modal.style.display = 'flex';
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            };
+            window.onclick = function(event) {
+                if (event.target === modal) modal.style.display = 'none';
+            };
+        }
+    });
     </script>
     <?php unset($_SESSION['success']); endif; ?>
 

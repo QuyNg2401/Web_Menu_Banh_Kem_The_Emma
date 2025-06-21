@@ -47,7 +47,7 @@ $products = $db->select(
     "SELECT p.*, c.name as category_name 
     FROM products p 
     LEFT JOIN categories c ON p.category_id = c.id 
-    {$where} 
+    {$where} AND p.isDeleted = 0
     {$orderBy} 
     LIMIT ? OFFSET ?",
     array_merge($params, [$limit, $offset])
@@ -61,16 +61,16 @@ unset($product);
 
 // Lấy tổng số sản phẩm
 $total = $db->selectOne(
-    "SELECT COUNT(*) as total FROM products p {$where}",
+    "SELECT COUNT(*) as total FROM products p {$where} AND p.isDeleted = 0",
     $params
 )['total'];
 
 // Lấy danh sách danh mục
-$categories = $db->select("SELECT * FROM categories ORDER BY name ASC");
+$categories = $db->select("SELECT * FROM categories WHERE isDeleted = 0 ORDER BY name ASC");
 
 // Xử lý xóa sản phẩm
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id'])) {
-    $db->delete('products', 'id = ?', [$_GET['id']]);
+    $db->update('products', ['isDeleted' => 1], ['id' => $_GET['id']]);
     $_SESSION['success'] = 'Xóa sản phẩm thành công!';
     header('Location: products.php');
     exit;

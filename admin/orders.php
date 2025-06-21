@@ -64,7 +64,7 @@ $orders = $db->select(
      LEFT JOIN customers c ON o.customer_id = c.id
      LEFT JOIN order_items oi ON o.id = oi.order_id
      LEFT JOIN products p ON oi.product_id = p.id
-     {$where}
+     {$where} AND o.isDeleted = 0
      GROUP BY o.id
      {$orderBy}
      LIMIT ? OFFSET ?",
@@ -76,13 +76,13 @@ $total = $db->selectOne(
     "SELECT COUNT(DISTINCT o.id) as total 
      FROM orders o 
      LEFT JOIN order_items oi ON o.id = oi.order_id
-     {$where}",
+     {$where} AND o.isDeleted = 0",
     $params
 )['total'];
 
 // Xử lý xóa đơn hàng
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id'])) {
-    $db->delete('orders', 'id = ?', [$_GET['id']]);
+    $db->update('orders', ['isDeleted' => 1], ['id' => $_GET['id']]);
     $_SESSION['success'] = 'Xóa đơn hàng thành công!';
     header('Location: orders.php');
     exit;
@@ -398,12 +398,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id']
         });
     });
     </script>
-    <?php if (!empty($_SESSION['success'])): ?>
-    <script>
-        showNotification("<?php echo addslashes($_SESSION['success']); ?>", "success");
-    </script>
-    <?php unset($_SESSION['success']); endif; ?>
-
     <?php if (!empty($_SESSION['error'])): ?>
     <script>
         showNotification("<?php echo addslashes($_SESSION['error']); ?>", "error");

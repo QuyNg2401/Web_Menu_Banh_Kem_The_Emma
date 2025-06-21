@@ -16,15 +16,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_add_category']))
     if (empty($name)) {
         echo json_encode(['success' => false, 'message' => 'Vui lòng nhập tên danh mục.']);
     } else {
-        // Lấy id lớn nhất hiện tại
-        $maxId = $db->selectOne('SELECT MAX(id) as max_id FROM categories');
-        $nextId = $maxId && $maxId['max_id'] ? $maxId['max_id'] + 1 : 1;
-        // Chèn thủ công id
+        // Lấy id lớn nhất từ các mục chưa xóa để xác định id tiếp theo
+        $maxVisibleId = $db->selectOne('SELECT MAX(id) as max_id FROM categories WHERE isDeleted = 0');
+        $nextId = ($maxVisibleId && $maxVisibleId['max_id']) ? $maxVisibleId['max_id'] + 1 : 1;
+
+        // Kiểm tra xem id này có bị chiếm bởi một mục đã xóa không
+        $existingRecord = $db->selectOne('SELECT id FROM categories WHERE id = ?', [$nextId]);
+        if ($existingRecord) {
+            // Nếu có, dời mục đã xóa ra một id khác
+            $absoluteMaxId = $db->selectOne('SELECT MAX(id) as max_id FROM categories');
+            $newIdForOldRecord = $absoluteMaxId['max_id'] + 1;
+            $db->update('categories', ['id' => $newIdForOldRecord], ['id' => $nextId]);
+        }
+        
+        // Chèn mục mới vào id đã được giải phóng
         $db->insert('categories', [
             'id' => $nextId,
             'name' => $name,
             'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => date('Y-m-d H:i:s'),
+            'isDeleted' => 0
         ]);
         echo json_encode(['success' => true, 'message' => 'Thêm danh mục thành công!']);
     }
@@ -37,15 +48,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action !== 'edit' && $action !== '
     if ($name === '') {
         $errors[] = 'Vui lòng nhập tên danh mục.';
     } else {
-        // Lấy id lớn nhất hiện tại
-        $maxId = $db->selectOne('SELECT MAX(id) as max_id FROM categories');
-        $nextId = $maxId && $maxId['max_id'] ? $maxId['max_id'] + 1 : 1;
-        // Chèn thủ công id
+        // Lấy id lớn nhất từ các mục chưa xóa để xác định id tiếp theo
+        $maxVisibleId = $db->selectOne('SELECT MAX(id) as max_id FROM categories WHERE isDeleted = 0');
+        $nextId = ($maxVisibleId && $maxVisibleId['max_id']) ? $maxVisibleId['max_id'] + 1 : 1;
+        
+        // Kiểm tra xem id này có bị chiếm bởi một mục đã xóa không
+        $existingRecord = $db->selectOne('SELECT id FROM categories WHERE id = ?', [$nextId]);
+        if ($existingRecord) {
+            // Nếu có, dời mục đã xóa ra một id khác
+            $absoluteMaxId = $db->selectOne('SELECT MAX(id) as max_id FROM categories');
+            $newIdForOldRecord = $absoluteMaxId['max_id'] + 1;
+            $db->update('categories', ['id' => $newIdForOldRecord], ['id' => $nextId]);
+        }
+        
+        // Chèn mục mới vào id đã được giải phóng
         $db->insert('categories', [
             'id' => $nextId,
             'name' => $name,
             'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => date('Y-m-d H:i:s'),
+            'isDeleted' => 0
         ]);
         $success = 'Thêm danh mục thành công!';
         $name = '';
@@ -75,14 +97,14 @@ if ($action === 'edit' && $id) {
 
 // Xóa danh mục
 if ($action === 'delete' && $id) {
-    $db->delete('categories', 'id = ?', [$id]);
+    $db->update('categories', ['isDeleted' => 1], ['id' => $id]);
     $_SESSION['success'] = 'Xóa danh mục thành công!';
     header('Location: categories.php');
     exit;
 }
 
 // Lấy danh sách danh mục
-$categories = $db->select('SELECT * FROM categories ORDER BY id ASC');
+$categories = $db->select('SELECT * FROM categories WHERE isDeleted = 0 ORDER BY id ASC');
 $user = getCurrentUser();
 ?>
 <!DOCTYPE html>
@@ -261,7 +283,10 @@ $user = getCurrentUser();
                                 <td><?php echo date('d/m/Y H:i', strtotime($cat['created_at'])); ?></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a href="categories.php?action=edit&id=<?php echo $cat['id']; ?>" class="btn-edit" title="Sửa"><i class="fas fa-edit"></i></a>
+                                        <button onclick="showEditCategoryModal(<?php echo $cat['id']; ?>)" class="btn-edit" title="Sửa" 
+                                            data-name="<?php echo htmlspecialchars($cat['name']); ?>">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
                                         <a href="#" class="btn-delete" data-id="<?php echo $cat['id']; ?>" title="Xóa"><i class="fas fa-trash"></i></a>
                                     </div>
                                 </td>
@@ -291,8 +316,28 @@ $user = getCurrentUser();
         <h3 style="margin-top:0;color:#28a745;"><i class="fas fa-check-circle"></i> Thành công</h3>
         <div id="successModalMsg" style="margin:18px 0 12px 0;font-size:1.1rem;"></div>
         <div style="display:flex;justify-content:center;margin-top:10px;">
-            <button id="closeSuccessModal" class="btn-submit">Đóng</button>
+            <button id="closeSuccessModal" class="btn-submit">Đóng (3s)</button>
         </div>
+    </div>
+</div>
+<!-- Modal chỉnh sửa danh mục -->
+<div id="editCategoryModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:24px;border-radius:12px;max-width:95vw;width:400px;box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
+            <h3 style="margin:0;font-size:1.3rem;color:#333;">Chỉnh sửa danh mục</h3>
+            <button onclick="closeEditCategoryModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#666;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;">&times;</button>
+        </div>
+        <form id="editCategoryForm" method="POST" action="../api/categories/update.php">
+            <input type="hidden" id="editCategoryId" name="category_id">
+            <div style="margin-bottom:15px;">
+                <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Tên danh mục</label>
+                <input type="text" id="editCategoryName" name="name" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:12px;">
+                <button type="button" onclick="closeEditCategoryModal()" style="background:#eee;color:#333;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;">Hủy</button>
+                <button type="submit" style="background:#007bff;color:#fff;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;">Cập nhật</button>
+            </div>
+        </form>
     </div>
 </div>
 <script src="../Assets/js/admin.js"></script>
@@ -418,6 +463,113 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<script>
+// Hàm hiển thị modal chỉnh sửa danh mục
+function showEditCategoryModal(categoryId) {
+    const button = event.target.closest('button');
+    const name = button.getAttribute('data-name');
+    
+    document.getElementById('editCategoryId').value = categoryId;
+    document.getElementById('editCategoryName').value = name;
+    document.getElementById('editCategoryModal').style.display = 'flex';
+}
+
+// Hàm đóng modal chỉnh sửa
+function closeEditCategoryModal() {
+    document.getElementById('editCategoryModal').style.display = 'none';
+}
+
+// Xử lý form chỉnh sửa
+document.addEventListener('DOMContentLoaded', function() {
+    const editCategoryForm = document.getElementById('editCategoryForm');
+    if (editCategoryForm) {
+        editCategoryForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('../api/categories/update.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeEditCategoryModal();
+                    // Hiển thị thông báo thành công
+                    var modal = document.getElementById('successModal');
+                    var msg = document.getElementById('successModalMsg');
+                    var closeBtn = document.getElementById('closeSuccessModal');
+                    if (modal && msg) {
+                        msg.innerHTML = data.message || 'Cập nhật danh mục thành công!';
+                        modal.style.display = 'flex';
+                        
+                        // Đếm ngược 3 giây trong nút button
+                        let timeLeft = 3;
+                        closeBtn.textContent = `Đóng (${timeLeft}s)`;
+                        
+                        const countdownTimer = setInterval(() => {
+                            timeLeft--;
+                            closeBtn.textContent = `Đóng (${timeLeft}s)`;
+                            
+                            if (timeLeft <= 0) {
+                                clearInterval(countdownTimer);
+                                window.location.reload();
+                            }
+                        }, 1000);
+                        
+                        // Lưu timer để có thể hủy khi đóng thủ công
+                        modal.countdownTimer = countdownTimer;
+                    }
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra khi cập nhật');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi cập nhật danh mục');
+            });
+        });
+    }
+
+    // Đóng modal khi click bên ngoài
+    const editCategoryModal = document.getElementById('editCategoryModal');
+    if (editCategoryModal) {
+        editCategoryModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditCategoryModal();
+            }
+        });
+    }
+
+    // Xử lý modal thông báo thành công
+    var modal = document.getElementById('successModal');
+    var msg = document.getElementById('successModalMsg');
+    var closeBtn = document.getElementById('closeSuccessModal');
+    if (modal && msg && closeBtn) {
+        closeBtn.onclick = function() {
+            // Hủy timer nếu có
+            if (modal.countdownTimer) {
+                clearInterval(modal.countdownTimer);
+            }
+            modal.style.display = 'none';
+            window.location.reload();
+        };
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                // Hủy timer nếu có
+                if (modal.countdownTimer) {
+                    clearInterval(modal.countdownTimer);
+                }
+                modal.style.display = 'none';
+                window.location.reload();
+            }
+        };
+    }
+});
+</script>
+
 <?php if (!empty($_SESSION['success'])): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {

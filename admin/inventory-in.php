@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: inventory.php');
         exit;
     } catch (Exception $e) {
-        $db->rollBack();
+        $db->rollback();
         $_SESSION['error'] = 'Có lỗi xảy ra: ' . $e->getMessage();
     }
 }
@@ -118,6 +118,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 grid-template-columns: 1fr;
             }
         }
+        .back-link { margin-left:12px; margin-bottom:30px; white-space:nowrap; display:inline-flex; align-items:center; text-decoration:none; color:var(--primary-color); transition:color 0.2s; }
+        .back-link .fa-arrow-left { transition: transform 0.2s; color: var(--primary-color); }
+        .back-link:hover { color:var(--primary-color); }
+        .back-link:hover span { text-decoration: underline; }
+        .back-link:hover .fa-arrow-left { transform: translateX(-6px); }
     </style>
 </head>
 <body>
@@ -221,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             </header>
-            
+            <a href="inventory.php" class="back-link"><i class="fas fa-arrow-left" style="margin-right:6px;"></i><span>Quay lại</span></a>
             <div class="form-container">
                 <form method="POST" action="">
                     <div class="form-group">
@@ -248,7 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <div class="form-group">
                         <label for="price">Giá tiền (VNĐ)</label>
-                        <input type="number" id="price" name="price" class="form-control" min="0" step="1000" required>
+                        <input type="number" id="price" name="price" class="form-control" min="0">
                     </div>
                     
                     <div class="form-group">

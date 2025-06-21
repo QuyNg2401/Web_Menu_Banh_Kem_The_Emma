@@ -133,6 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title><?php echo $id ? 'Sửa' : 'Thêm'; ?> sản phẩm - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../Assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .back-link { margin-left:12px; margin-bottom:30px; white-space:nowrap; display:inline-flex; align-items:center; text-decoration:none; color:var(--primary-color); transition:color 0.2s; }
+        .back-link .fa-arrow-left { transition: transform 0.2s; color: var(--primary-color); }
+        .back-link:hover { color:var(--primary-color); }
+        .back-link:hover span { text-decoration: underline; }
+        .back-link:hover .fa-arrow-left { transform: translateX(-6px); }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -233,6 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             </header>
+            <a href="products.php" class="back-link"><i class="fas fa-arrow-left" style="margin-right:6px;"></i><span>Quay lại</span></a>
             <div class="content-inner">
 
                 

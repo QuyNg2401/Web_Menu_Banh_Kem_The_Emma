@@ -28,7 +28,7 @@ if ($search) {
 }
 
 // Đã xóa xử lý sắp xếp
-$orderBy = 'ORDER BY created_at DESC';
+$orderBy = 'ORDER BY u.id ASC';
 
 // Lấy danh sách người dùng
 $users = $db->select(
@@ -37,7 +37,7 @@ $users = $db->select(
             SUM(CASE WHEN o.status = 'completed' THEN o.total_amount ELSE 0 END) as total_spent
      FROM users u
      LEFT JOIN orders o ON u.id = o.customer_id
-     {$where}
+     {$where} AND u.isDeleted = 0
      GROUP BY u.id
      {$orderBy}
      LIMIT ? OFFSET ?",
@@ -46,13 +46,13 @@ $users = $db->select(
 
 // Lấy tổng số người dùng
 $total = $db->selectOne(
-    "SELECT COUNT(*) as total FROM users {$where}",
+    "SELECT COUNT(*) as total FROM users {$where} AND isDeleted = 0",
     $params
 )['total'];
 
 // Xử lý xóa nhân viên
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id'])) {
-    $db->delete('users', 'id = ?', [$_GET['id']]);
+    $db->update('users', ['isDeleted' => 1], ['id' => $_GET['id']]);
     $_SESSION['success'] = 'Xóa nhân viên thành công!';
     header('Location: users.php');
     exit;
@@ -139,7 +139,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id']
                         </a>
                     </li>
                     <li class="active">
-                        <a href="users.php">
+                        <a href="users.php"> 
                             <i class="fas fa-users"></i>
                             <span>Nhân viên</span>
                         </a>
@@ -204,7 +204,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id']
                                 <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Tìm kiếm nhân viên...">
                             </div>
                         </form>
-                        <a href="user-form.php" class="btn-add" style="white-space:nowrap;"> <i class="fas fa-plus"></i> Thêm nhân viên </a>
+                        <a href="#" id="showAddUserModal" class="btn-add" style="white-space:nowrap;"> <i class="fas fa-plus"></i> Thêm nhân viên </a>
                     </div>
                     
                     <!-- Users Table -->
@@ -242,9 +242,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id']
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="user-form.php?id=<?php echo $u['id']; ?>" class="btn-edit" title="Sửa">
+                                            <button onclick="showEditUserModal(<?php echo $u['id']; ?>)" class="btn-edit" title="Sửa" 
+                                                data-name="<?php echo htmlspecialchars($u['name']); ?>"
+                                                data-email="<?php echo htmlspecialchars($u['email']); ?>"
+                                                data-phone="<?php echo htmlspecialchars($u['phone'] ?? ''); ?>"
+                                                data-role="<?php echo $u['role']; ?>"
+                                                data-hourly-rate="<?php echo $u['hourly_rate']; ?>">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
+                                            </button>
                                             <?php if ($u['id'] !== $user['id']): ?>
                                             <button class="btn-delete" data-id="<?php echo $u['id']; ?>" data-type="users" title="Xóa">
                                                 <i class="fas fa-trash"></i>
@@ -293,58 +298,108 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id']
         </main>
     </div>
     
+    <!-- Modal thêm nhân viên -->
+    <div id="addUserModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+        <div style="background:#fff;padding:24px;border-radius:12px;max-width:95vw;width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
+                <h3 style="margin:0;font-size:1.3rem;color:#333;">Thêm nhân viên mới</h3>
+                <button onclick="closeAddUserModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#666;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;">&times;</button>
+            </div>
+            <form id="addUserForm" method="POST">
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Tên nhân viên</label>
+                    <input type="text" name="name" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Email</label>
+                    <input type="email" name="email" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                 <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Mật khẩu</label>
+                    <input type="password" name="password" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Số điện thoại</label>
+                    <input type="text" name="phone" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Vai trò</label>
+                    <select name="role" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                        <option value="user" selected>Nhân viên</option>
+                        <option value="admin">Quản trị viên</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Lương theo giờ (VNĐ)</label>
+                    <input type="number" name="hourly_rate" min="0" value="0" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:12px;">
+                    <button type="button" onclick="closeAddUserModal()" style="background:#eee;color:#333;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;">Hủy</button>
+                    <button type="submit" style="background:#007bff;color:#fff;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal chỉnh sửa nhân viên -->
+    <div id="editUserModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+        <div style="background:#fff;padding:24px;border-radius:12px;max-width:95vw;width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
+                <h3 style="margin:0;font-size:1.3rem;color:#333;">Chỉnh sửa nhân viên</h3>
+                <button onclick="closeEditUserModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#666;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;">&times;</button>
+            </div>
+            <form id="editUserForm" method="POST" action="../api/users/update.php">
+                <input type="hidden" id="editUserId" name="user_id">
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Tên nhân viên</label>
+                    <input type="text" id="editUserName" name="name" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Email</label>
+                    <input type="email" id="editUserEmail" name="email" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Số điện thoại</label>
+                    <input type="text" id="editUserPhone" name="phone" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Vai trò</label>
+                    <select id="editUserRole" name="role" required style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                        <option value="user">Nhân viên</option>
+                        <option value="admin">Quản trị viên</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;margin-bottom:5px;font-weight:600;color:#333;">Lương theo giờ (VNĐ)</label>
+                    <input type="number" id="editUserHourlyRate" name="hourly_rate" min="0" step="1000" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;">
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:12px;">
+                    <button type="button" onclick="closeEditUserModal()" style="background:#eee;color:#333;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;">Hủy</button>
+                    <button type="submit" style="background:#007bff;color:#fff;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script src="../Assets/js/admin.js"></script>
     <script>
-    const menuToggle = document.querySelector('.menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    menuToggle && menuToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        sidebar.classList.toggle('active');
-    });
-    document.addEventListener('click', function(e) {
-        if (window.innerWidth <= 1080 && sidebar.classList.contains('active')) {
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                sidebar.classList.remove('active');
-            }
-        }
-    });
-    </script>
-
-    <?php if (!empty($_SESSION['success'])): ?>
-    <script>
-        showNotification("<?php echo addslashes($_SESSION['success']); ?>", "success");
-    </script>
-    <?php unset($_SESSION['success']); endif; ?>
-
-    <?php if (!empty($_SESSION['error'])): ?>
-    <script>
-        showNotification("<?php echo addslashes($_SESSION['error']); ?>", "error");
-    </script>
-    <?php unset($_SESSION['error']); endif; ?>
-
-    <!-- Modal xác nhận xóa nhân viên -->
-    <div class="modal" id="deleteUserModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
-        <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
-            <h3 style="margin-top:0;">Xác nhận xóa</h3>
-            <p>Bạn có chắc chắn muốn xóa nhân viên này không?</p>
-            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:18px;">
-                <button id="cancelDeleteUserBtn" class="btn-cancel">Hủy</button>
-                <button id="confirmDeleteUserBtn" class="btn-submit">Xóa</button>
-            </div>
-        </div>
-    </div>
-    <!-- Modal thông báo thành công -->
-    <div class="modal" id="successModal" style="display:none;position:fixed;z-index:10000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
-        <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:350px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;text-align:center;">
-            <h3 style="margin-top:0;color:#28a745;"><i class="fas fa-check-circle"></i> Thành công</h3>
-            <div id="successModalMsg" style="margin:18px 0 12px 0;font-size:1.1rem;"></div>
-            <div style="display:flex;justify-content:center;margin-top:10px;">
-                <button id="closeSuccessModal" class="btn-submit">Đóng</button>
-            </div>
-        </div>
-    </div>
-    <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Responsive sidebar
+        const menuToggle = document.querySelector('.menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        menuToggle && menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            sidebar.classList.toggle('active');
+        });
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 1080 && sidebar.classList.contains('active')) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Xử lý modal xóa nhân viên
         let deleteId = null;
         const deleteModal = document.getElementById('deleteUserModal');
         const cancelDeleteBtn = document.getElementById('cancelDeleteUserBtn');
@@ -371,23 +426,207 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && !empty($_GET['id']
                 }
             };
         }
+
+        // Xử lý form chỉnh sửa
+        const editUserForm = document.getElementById('editUserForm');
+        if (editUserForm) {
+            editUserForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                
+                fetch('../api/users/update.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeEditUserModal();
+                        // Hiển thị thông báo thành công
+                        var modal = document.getElementById('successModal');
+                        var msg = document.getElementById('successModalMsg');
+                        var closeBtn = document.getElementById('closeSuccessModal');
+                        if (modal && msg) {
+                            msg.innerHTML = data.message || 'Cập nhật nhân viên thành công!';
+                            modal.style.display = 'flex';
+                            
+                            // Đếm ngược 3 giây trong nút button
+                            let timeLeft = 3;
+                            closeBtn.textContent = `Đóng (${timeLeft}s)`;
+                            
+                            const countdownTimer = setInterval(() => {
+                                timeLeft--;
+                                closeBtn.textContent = `Đóng (${timeLeft}s)`;
+                                
+                                if (timeLeft <= 0) {
+                                    clearInterval(countdownTimer);
+                                    window.location.reload();
+                                }
+                            }, 1000);
+                            
+                            // Lưu timer để có thể hủy khi đóng thủ công
+                            modal.countdownTimer = countdownTimer;
+                        }
+                    } else {
+                        alert(data.message || 'Có lỗi xảy ra khi cập nhật');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi cập nhật nhân viên');
+                });
+            });
+        }
+
+        // Đóng modal khi click bên ngoài
+        const editUserModal = document.getElementById('editUserModal');
+        if (editUserModal) {
+            editUserModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEditUserModal();
+                }
+            });
+        }
+
+        // Xử lý modal thêm nhân viên
+        const addUserModal = document.getElementById('addUserModal');
+        document.getElementById('showAddUserModal').addEventListener('click', () => {
+            addUserModal.style.display = 'flex';
+        });
+
+        addUserModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddUserModal();
+            }
+        });
+        
+        // Xử lý form thêm nhân viên
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('../api/users/create.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeAddUserModal();
+                    var modal = document.getElementById('successModal');
+                    var msg = document.getElementById('successModalMsg');
+                    if (modal && msg) {
+                        msg.innerHTML = data.message || 'Thêm nhân viên thành công!';
+                        modal.style.display = 'flex';
+                        // Logic đếm ngược và reload đã có sẵn
+                    }
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Không thể thêm nhân viên. Vui lòng thử lại.');
+            });
+        });
+    });
+
+    function closeAddUserModal() {
+        const modal = document.getElementById('addUserModal');
+        modal.style.display = 'none';
+        document.getElementById('addUserForm').reset();
+    }
+
+    // Hàm hiển thị modal chỉnh sửa nhân viên
+    function showEditUserModal(userId) {
+        const button = event.target.closest('button');
+        const name = button.getAttribute('data-name');
+        const email = button.getAttribute('data-email');
+        const phone = button.getAttribute('data-phone');
+        const role = button.getAttribute('data-role');
+        const hourlyRate = button.getAttribute('data-hourly-rate');
+        
+        document.getElementById('editUserId').value = userId;
+        document.getElementById('editUserName').value = name;
+        document.getElementById('editUserEmail').value = email;
+        document.getElementById('editUserPhone').value = phone;
+        document.getElementById('editUserRole').value = role;
+        document.getElementById('editUserHourlyRate').value = hourlyRate;
+        document.getElementById('editUserModal').style.display = 'flex';
+    }
+
+    // Hàm đóng modal chỉnh sửa
+    function closeEditUserModal() {
+        document.getElementById('editUserModal').style.display = 'none';
+    }
+    </script>
+
+    <?php if (!empty($_SESSION['error'])): ?>
+    <script>
+        showNotification("<?php echo addslashes($_SESSION['error']); ?>", "error");
+    </script>
+    <?php unset($_SESSION['error']); endif; ?>
+
+    <!-- Modal xác nhận xóa nhân viên -->
+    <div class="modal" id="deleteUserModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+        <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
+            <h3 style="margin-top:0;">Xác nhận xóa</h3>
+            <p>Bạn có chắc chắn muốn xóa nhân viên này không?</p>
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:18px;">
+                <button id="cancelDeleteUserBtn" class="btn-cancel">Hủy</button>
+                <button id="confirmDeleteUserBtn" class="btn-submit">Xóa</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal thông báo thành công -->
+    <div class="modal" id="successModal" style="display:none;position:fixed;z-index:10000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.18);align-items:center;justify-content:center;">
+        <div class="modal-dialog" style="background:#fff;padding:32px 28px 18px 28px;border-radius:12px;max-width:95vw;width:350px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;text-align:center;">
+            <h3 style="margin-top:0;color:#28a745;"><i class="fas fa-check-circle"></i> Thành công</h3>
+            <div id="successModalMsg" style="margin:18px 0 12px 0;font-size:1.1rem;"></div>
+            <div style="display:flex;justify-content:center;margin-top:10px;">
+                <button id="closeSuccessModal" class="btn-submit">Đóng (3s)</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Xử lý modal thông báo thành công
+        var modal = document.getElementById('successModal');
+        var msg = document.getElementById('successModalMsg');
+        var closeBtn = document.getElementById('closeSuccessModal');
+        if (modal && msg && closeBtn) {
+            closeBtn.onclick = function() {
+                // Hủy timer nếu có
+                if (modal.countdownTimer) {
+                    clearInterval(modal.countdownTimer);
+                }
+                modal.style.display = 'none';
+                window.location.reload();
+            };
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    // Hủy timer nếu có
+                    if (modal.countdownTimer) {
+                        clearInterval(modal.countdownTimer);
+                    }
+                    modal.style.display = 'none';
+                    window.location.reload();
+                }
+            };
+        }
     });
     </script>
+    
     <?php if (!empty($_SESSION['success'])): ?>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var modal = document.getElementById('successModal');
         var msg = document.getElementById('successModalMsg');
-        var closeBtn = document.getElementById('closeSuccessModal');
-        if (modal && msg && closeBtn) {
+        if (modal && msg) {
             msg.innerHTML = "<?php echo addslashes($_SESSION['success']); ?>";
             modal.style.display = 'flex';
-            closeBtn.onclick = function() {
-                modal.style.display = 'none';
-            };
-            window.onclick = function(event) {
-                if (event.target === modal) modal.style.display = 'none';
-            };
         }
     });
     </script>
